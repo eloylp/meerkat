@@ -29,7 +29,7 @@ func main() {
 	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, imageBuffer)
 	h := http.NewServeMux()
 	h.HandleFunc("/data", serveMJPEG(imageBuffer))
-	h.HandleFunc("/view", serverHTMLClient())
+	h.HandleFunc("/", serverHTMLClient())
 	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
 		log.Fatal(err)
 	}
