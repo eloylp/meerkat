@@ -13,6 +13,8 @@ import (
 
 var frameBuffer chan []byte
 
+const FrameStreamEndpoint = "/data"
+
 func init() {
 	frameBuffer = make(chan []byte, 10)
 }
@@ -28,7 +30,7 @@ func main() {
 	cfg := cfg()
 	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, frameBuffer)
 	h := http.NewServeMux()
-	h.HandleFunc("/data", MJPEG(frameBuffer))
+	h.HandleFunc(FrameStreamEndpoint, MJPEG(frameBuffer))
 	h.HandleFunc("/", HTMLClient())
 	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
 		log.Fatal(err)
@@ -38,7 +40,7 @@ func main() {
 func HTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/html")
-		html := `<!DOCTYPE html><html><body><img src="/data"></body></html>`
+		html := fmt.Sprintf(`<!DOCTYPE html><html><body><img src="%s"></body></html>`, FrameStreamEndpoint)
 		_, _ = w.Write([]byte(html))
 	}
 }
