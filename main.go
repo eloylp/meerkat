@@ -23,23 +23,7 @@ func main() {
 	flag.StringVar(&listenAddress, "l", "0.0.0.0:3000", "Pass the http server for serving results")
 	flag.Parse()
 	images = make(chan []byte, 10)
-	go func() {
-		for {
-			time.Sleep(time.Duration(interval) * time.Second)
-			resp, err := http.Get(cameraUrl)
-			if err != nil {
-				log.Fatal(err)
-			}
-			jpeg, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if err := resp.Body.Close(); err != nil {
-				log.Fatal(err)
-			}
-			images <- jpeg
-		}
-	}()
+	go startCameraPolling(interval, cameraUrl, images)
 	h := http.NewServeMux()
 	h.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
 
@@ -69,5 +53,24 @@ func main() {
 	})
 	if err := http.ListenAndServe(listenAddress, h); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func startCameraPolling(interval int, cameraUrl string, images chan []byte) {
+
+	for {
+		time.Sleep(time.Duration(interval) * time.Second)
+		resp, err := http.Get(cameraUrl)
+		if err != nil {
+			log.Fatal(err)
+		}
+		jpeg, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := resp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+		images <- jpeg
 	}
 }
