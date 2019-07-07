@@ -28,8 +28,24 @@ func main() {
 	cfg := cfg()
 	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, imageBuffer)
 	h := http.NewServeMux()
-	h.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
+	h.HandleFunc("/data", serveMJPEG(imageBuffer))
+	h.HandleFunc("/view", serverHTMLClient())
+	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
+		log.Fatal(err)
+	}
+}
 
+func serverHTMLClient() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Add("Content-type", "text/html")
+		html := `<!DOCTYPE html><html><body><img src="/data"></body></html>`
+		_, _ = w.Write([]byte(html))
+	}
+}
+
+func serveMJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := multipart.NewWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
@@ -48,14 +64,6 @@ func main() {
 				log.Fatal(writeErr.Error())
 			}
 		}
-	})
-	h.HandleFunc("/view", func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Add("Content-type", "text/html")
-		html := `<!DOCTYPE html><html><body><img src="/data"></body></html>`
-		_, _ = w.Write([]byte(html))
-	})
-	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
-		log.Fatal(err)
 	}
 }
 
