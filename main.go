@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-var imageBuffer chan []byte
+var frameBuffer chan []byte
 
 func init() {
-	imageBuffer = make(chan []byte, 10)
+	frameBuffer = make(chan []byte, 10)
 }
 
 type config struct {
@@ -26,16 +26,16 @@ type config struct {
 func main() {
 
 	cfg := cfg()
-	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, imageBuffer)
+	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, frameBuffer)
 	h := http.NewServeMux()
-	h.HandleFunc("/data", serveMJPEG(imageBuffer))
-	h.HandleFunc("/", serverHTMLClient())
+	h.HandleFunc("/data", MJPEG(frameBuffer))
+	h.HandleFunc("/", HTMLClient())
 	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func serverHTMLClient() func(w http.ResponseWriter, r *http.Request) {
+func HTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/html")
 		html := `<!DOCTYPE html><html><body><img src="/data"></body></html>`
@@ -43,7 +43,7 @@ func serverHTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serveMJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
+func MJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := multipart.NewWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
@@ -76,21 +76,29 @@ func cfg() *config {
 	return c
 }
 
-func startCameraPolling(interval uint, cameraUrl string, images chan []byte) {
+func startCameraPolling(interval uint, cameraUrl string, frames chan []byte) {
 
 	for {
 		time.Sleep(time.Duration(interval) * time.Second)
-		resp, err := http.Get(cameraUrl)
+		frame, err := pullFrameFromURL(cameraUrl)
 		if err != nil {
 			log.Fatal(err)
 		}
-		jpeg, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err := resp.Body.Close(); err != nil {
-			log.Fatal(err)
-		}
-		images <- jpeg
+		frames <- frame
 	}
+}
+
+func pullFrameFromURL(u string) ([]byte, error) {
+	resp, err := http.Get(u)
+	if err != nil {
+		return nil, err
+	}
+	jpeg, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+	return jpeg, nil
 }
