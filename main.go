@@ -20,7 +20,7 @@ func init() {
 }
 
 type config struct {
-	CameraUrl           string
+	URL                 string
 	PollingIntervalSecs uint
 	HTTPListenAddress   string
 }
@@ -28,7 +28,7 @@ type config struct {
 func main() {
 
 	cfg := cfg()
-	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, frameBuffer)
+	go startPolling(cfg.PollingIntervalSecs, cfg.URL, frameBuffer)
 	h := http.NewServeMux()
 	h.HandleFunc(FrameStreamEndpoint, MJPEG(frameBuffer))
 	h.HandleFunc("/", HTMLClient())
@@ -71,18 +71,18 @@ func writeFrame(mimeWriter *multipart.Writer, image []byte) {
 
 func cfg() *config {
 	c := &config{}
-	flag.StringVar(&c.CameraUrl, "u", "", "Pass the camera url")
-	flag.UintVar(&c.PollingIntervalSecs, "i", 1, "Pass the camera interval")
-	flag.StringVar(&c.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server for serving results")
+	flag.StringVar(&c.URL, "u", "", "The URL to recover frames from")
+	flag.UintVar(&c.PollingIntervalSecs, "i", 1, "The interval to fill the frame buffer")
+	flag.StringVar(&c.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
 	flag.Parse()
 	return c
 }
 
-func startCameraPolling(interval uint, cameraUrl string, frames chan []byte) {
+func startPolling(interval uint, url string, frames chan []byte) {
 
 	for {
 		time.Sleep(time.Duration(interval) * time.Second)
-		frame, err := pullFrameFromURL(cameraUrl)
+		frame, err := pullFrameFromURL(url)
 		if err != nil {
 			log.Fatal(err)
 		}
