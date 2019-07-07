@@ -13,17 +13,17 @@ import (
 
 var images chan []byte
 
+type config struct {
+	CameraUrl           string
+	PollingIntervalSecs uint
+	HTTPListenAddress   string
+}
+
 func main() {
 
-	var cameraUrl string
-	flag.StringVar(&cameraUrl, "u", "", "Pass the camera url")
-	var interval uint
-	flag.UintVar(&interval, "i", 1, "Pass the camera interval")
-	var listenAddress string
-	flag.StringVar(&listenAddress, "l", "0.0.0.0:3000", "Pass the http server for serving results")
-	flag.Parse()
+	cfg := cfg()
 	images = make(chan []byte, 10)
-	go startCameraPolling(interval, cameraUrl, images)
+	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, images)
 	h := http.NewServeMux()
 	h.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
 
@@ -51,9 +51,18 @@ func main() {
 		html := `<!DOCTYPE html><html><body><img src="/data"></body></html>`
 		_, _ = w.Write([]byte(html))
 	})
-	if err := http.ListenAndServe(listenAddress, h); err != nil {
+	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func cfg() *config {
+	c := &config{}
+	flag.StringVar(&c.CameraUrl, "u", "", "Pass the camera url")
+	flag.UintVar(&c.PollingIntervalSecs, "i", 1, "Pass the camera interval")
+	flag.StringVar(&c.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server for serving results")
+	flag.Parse()
+	return c
 }
 
 func startCameraPolling(interval uint, cameraUrl string, images chan []byte) {
