@@ -44,26 +44,26 @@ func serverHTMLClient() func(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveMJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := multipart.NewWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
 
 		for image := range imageBuffer {
-
-			partHeader := make(textproto.MIMEHeader)
-			partHeader.Add("Content-Type", "image/jpeg")
-
-			partWriter, partErr := mimeWriter.CreatePart(partHeader)
-			if nil != partErr {
-				log.Fatal(partErr.Error())
-			}
-
-			if _, writeErr := partWriter.Write(image); nil != writeErr {
-				log.Fatal(writeErr.Error())
-			}
+			writeFrame(mimeWriter, image)
 		}
+	}
+}
+
+func writeFrame(mimeWriter *multipart.Writer, image []byte) {
+	partHeader := make(textproto.MIMEHeader)
+	partHeader.Add("Content-Type", "image/jpeg")
+	partWriter, partErr := mimeWriter.CreatePart(partHeader)
+	if partErr != nil {
+		log.Fatal(partErr.Error())
+	}
+	if _, writeErr := partWriter.Write(image); writeErr != nil {
+		log.Fatal(writeErr.Error())
 	}
 }
 
