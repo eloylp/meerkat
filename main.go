@@ -17,8 +17,8 @@ func main() {
 
 	var cameraUrl string
 	flag.StringVar(&cameraUrl, "u", "", "Pass the camera url")
-	var interval int
-	flag.IntVar(&interval, "i", 1, "Pass the camera interval")
+	var interval uint
+	flag.UintVar(&interval, "i", 1, "Pass the camera interval")
 	var listenAddress string
 	flag.StringVar(&listenAddress, "l", "0.0.0.0:3000", "Pass the http server for serving results")
 	flag.Parse()
@@ -56,7 +56,7 @@ func main() {
 	}
 }
 
-func startCameraPolling(interval int, cameraUrl string, images chan []byte) {
+func startCameraPolling(interval uint, cameraUrl string, images chan []byte) {
 
 	for {
 		time.Sleep(time.Duration(interval) * time.Second)
