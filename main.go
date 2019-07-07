@@ -11,7 +11,11 @@ import (
 	"time"
 )
 
-var images chan []byte
+var imageBuffer chan []byte
+
+func init() {
+	imageBuffer = make(chan []byte, 10)
+}
 
 type config struct {
 	CameraUrl           string
@@ -22,8 +26,7 @@ type config struct {
 func main() {
 
 	cfg := cfg()
-	images = make(chan []byte, 10)
-	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, images)
+	go startCameraPolling(cfg.PollingIntervalSecs, cfg.CameraUrl, imageBuffer)
 	h := http.NewServeMux()
 	h.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
 
@@ -31,7 +34,7 @@ func main() {
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
 
-		for image := range images {
+		for image := range imageBuffer {
 
 			partHeader := make(textproto.MIMEHeader)
 			partHeader.Add("Content-Type", "image/jpeg")
