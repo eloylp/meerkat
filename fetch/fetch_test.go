@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestHTTPFetcher_Fetch_OK(t *testing.T) {
+func TestHTTPFetcher_Fetch(t *testing.T) {
 
 	resUrl := "http://iesource.com/camera.jpg"
 	body := "OK"
