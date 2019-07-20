@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"go-sentinel/fetch"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -79,28 +79,13 @@ func cfg() *config {
 }
 
 func startPolling(interval uint, url string, frames chan []byte) {
-
+	f := fetch.NewHTTPFetcher(&http.Client{})
 	for {
 		time.Sleep(time.Duration(interval) * time.Second)
-		frame, err := pullFrameFromURL(url)
+		frame, err := f.Fetch(url)
 		if err != nil {
 			log.Fatal(err)
 		}
 		frames <- frame
 	}
-}
-
-func pullFrameFromURL(u string) ([]byte, error) {
-	resp, err := http.Get(u)
-	if err != nil {
-		return nil, err
-	}
-	jpeg, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := resp.Body.Close(); err != nil {
-		return nil, err
-	}
-	return jpeg, nil
 }
