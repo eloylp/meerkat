@@ -5,7 +5,7 @@ import (
 )
 
 type sample struct {
-	config      *config
+	config      Config
 	mustPass    bool
 	description string
 }
@@ -25,7 +25,7 @@ func TestValidate(t *testing.T) {
 
 func validateCases() []sample {
 	return []sample{
-		{config: &config{
+		{config: Config{
 			PollInterval:      1,
 			Resource:          "http://example.com/camdump.jpeg",
 			HTTPListenAddress: "0.0.0.0:8080",
@@ -33,7 +33,7 @@ func validateCases() []sample {
 			mustPass:    true,
 			description: "Must accept complete config with url as resource",
 		},
-		{config: &config{
+		{config: Config{
 			PollInterval:      1,
 			Resource:          "/var/motion/dump.jpeg",
 			HTTPListenAddress: "0.0.0.0:8080",
@@ -41,7 +41,7 @@ func validateCases() []sample {
 			mustPass:    true,
 			description: "Must accept complete config with path as resource",
 		},
-		{config: &config{
+		{config: Config{
 			PollInterval:      0,
 			Resource:          "/var/motion/dump.jpeg",
 			HTTPListenAddress: "0.0.0.0:8080",
@@ -49,7 +49,7 @@ func validateCases() []sample {
 			mustPass:    false,
 			description: "Must not accept a config with 0 poll interval setting",
 		},
-		{config: &config{
+		{config: Config{
 			PollInterval:      1,
 			Resource:          "",
 			HTTPListenAddress: "0.0.0.0:8080",
@@ -57,7 +57,7 @@ func validateCases() []sample {
 			mustPass:    false,
 			description: "Must not accept a config with no resource setting",
 		},
-		{config: &config{
+		{config: Config{
 			PollInterval:      1,
 			Resource:          "/var/motion/dump.jpeg",
 			HTTPListenAddress: "",
