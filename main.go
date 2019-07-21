@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"go-sentinel/config"
 	"go-sentinel/fetch"
 	"log"
 	"mime/multipart"
@@ -19,16 +19,10 @@ func init() {
 	frameBuffer = make(chan []byte, 10)
 }
 
-type config struct {
-	URL                 string
-	PollingIntervalSecs uint
-	HTTPListenAddress   string
-}
-
 func main() {
 
-	cfg := cfg()
-	go startPolling(cfg.PollingIntervalSecs, cfg.URL, frameBuffer)
+	cfg := config.C()
+	go startPolling(cfg.PollInterval, cfg.Resource, frameBuffer)
 	h := http.NewServeMux()
 	h.HandleFunc(FrameStreamEndpoint, MJPEG(frameBuffer))
 	h.HandleFunc("/", HTMLClient())
@@ -67,15 +61,6 @@ func writeFrame(mimeWriter *multipart.Writer, image []byte) {
 	if _, writeErr := partWriter.Write(image); writeErr != nil {
 		log.Fatal(writeErr.Error())
 	}
-}
-
-func cfg() *config {
-	c := &config{}
-	flag.StringVar(&c.URL, "u", "", "The URL to recover frames from")
-	flag.UintVar(&c.PollingIntervalSecs, "i", 1, "The interval to fill the frame buffer")
-	flag.StringVar(&c.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
-	flag.Parse()
-	return c
 }
 
 func startPolling(interval uint, url string, frames chan []byte) {
