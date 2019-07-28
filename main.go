@@ -6,7 +6,6 @@ import (
 	"go-sentinel/www"
 	"log"
 	"net/http"
-	"time"
 )
 
 var frameBuffer chan []byte
@@ -17,21 +16,11 @@ func init() {
 
 func main() {
 	cfg := config.C()
-	go startPolling(cfg.PollInterval, cfg.Resource, frameBuffer)
+	fetcher := fetch.NewHTTPFetcher(&http.Client{})
+	dataPump := fetch.NewDataPump(cfg.PollInterval, cfg.Resource, frameBuffer, fetcher)
+	go dataPump.Start()
 	server := www.NewServer(cfg.HTTPListenAddress, frameBuffer)
 	if err := server.Start(); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func startPolling(interval uint, url string, frames chan []byte) {
-	f := fetch.NewHTTPFetcher(&http.Client{})
-	for {
-		time.Sleep(time.Duration(interval) * time.Second)
-		frame, err := f.Fetch(url)
-		if err != nil {
-			log.Fatal(err)
-		}
-		frames <- frame
 	}
 }
