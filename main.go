@@ -16,13 +16,10 @@ func init() {
 }
 
 func main() {
-
 	cfg := config.C()
 	go startPolling(cfg.PollInterval, cfg.Resource, frameBuffer)
-	h := http.NewServeMux()
-	h.HandleFunc(www.FrameStreamEndpoint, www.MJPEG(frameBuffer))
-	h.HandleFunc("/", www.HTMLClient())
-	if err := http.ListenAndServe(cfg.HTTPListenAddress, h); err != nil {
+	server := www.NewServer(cfg.HTTPListenAddress, frameBuffer)
+	if err := server.Start(); err != nil {
 		log.Fatal(err)
 	}
 }

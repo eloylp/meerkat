@@ -8,9 +8,7 @@ import (
 	"net/textproto"
 )
 
-const FrameStreamEndpoint = "/data"
-
-func HTMLClient() func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/html")
 		html := fmt.Sprintf(`<!DOCTYPE html><html><body><img src="%s"></body></html>`, FrameStreamEndpoint)
@@ -18,7 +16,7 @@ func HTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func MJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleMJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := multipart.NewWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
