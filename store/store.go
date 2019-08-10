@@ -1,21 +1,65 @@
 package store
 
 import (
+	"bytes"
+	"io"
+	"io/ioutil"
 	"time"
 )
 
 type Store interface {
-	Start(input chan []byte) chan error
-	Add(data []byte) error
-	Shutdown() error
-	CleanUp() error
+	AddItem(data io.Reader) error
+	Subscribe(ch chan io.Reader)
+	Close()
 }
 
-type DataFrame struct {
+type dataFrame struct {
 	timeStamp time.Time
+	length    uint64
 	data      []byte
 }
 
 type timeLineStore struct {
-	store []DataFrame
+	store                 []dataFrame
+	subscribers           []chan io.Reader
+	maxItems              uint
+	maxItemLength         uint64
+	subscribersBufferSize uint64
+}
+
+func NewTimeLineStore(maxItems uint, maxItemLength uint64) *timeLineStore {
+	return &timeLineStore{maxItems: maxItems, maxItemLength: maxItemLength, subscribersBufferSize: 10}
+}
+
+func (t *timeLineStore) AddItem(r io.Reader) error {
+
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return err
+	}
+	frame := dataFrame{
+		timeStamp: time.Now(),
+		length:    uint64(len(data)),
+		data:      data,
+	}
+	t.store = append(t.store, frame)
+	t.publish(&frame.data)
+	return nil
+}
+
+func (t *timeLineStore) Subscribe() chan io.Reader {
+	ch := make(chan io.Reader, t.subscribersBufferSize)
+	t.subscribers = append(t.subscribers, ch)
+	return ch
+}
+func (t *timeLineStore) Close() {
+	for _, s := range t.subscribers {
+		close(s)
+	}
+}
+
+func (t *timeLineStore) publish(i *[]byte) {
+	for _, s := range t.subscribers {
+		s <- bytes.NewReader(*i)
+	}
 }
