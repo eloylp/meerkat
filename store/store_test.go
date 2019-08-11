@@ -1,9 +1,8 @@
-package store_test
+package store
 
 import (
 	"bytes"
 	"fmt"
-	"go-sentinel/store"
 	"io"
 	"io/ioutil"
 	"testing"
@@ -16,7 +15,7 @@ func TestTimeLineStore(t *testing.T) {
 		bytes.NewReader([]byte("d2")),
 		bytes.NewReader([]byte("d3")),
 	}
-	s := store.NewTimeLineStore(3, 10000)
+	s := NewTimeLineStore(3, 10000)
 	listenCh := s.Subscribe()
 	for _, sample := range samples {
 		if err := s.AddItem(sample); err != nil {
@@ -39,4 +38,47 @@ func TestTimeLineStore(t *testing.T) {
 		count++
 	}
 
+}
+
+func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
+
+	s := populatedTimeLineStore(t)
+	subs := s.Subscribe()
+	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
+		t.Fatal(err)
+	}
+	expectedSize := 3
+	size := s.Length()
+	if size != 3 {
+		t.Errorf("Expected resultant items is %v but %v obtained", expectedSize, size)
+	}
+	s.Close()
+	var lastItemR io.Reader
+	for item := range subs {
+		lastItemR = item
+	}
+	data, err := ioutil.ReadAll(lastItemR)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lastItem := string(data)
+	expectedLastItem := "d4"
+	if lastItem != expectedLastItem {
+		t.Errorf("Expected last item is %s but got %s", expectedLastItem, lastItem)
+	}
+}
+
+func populatedTimeLineStore(t *testing.T) *timeLineStore {
+	samples := []io.Reader{
+		bytes.NewReader([]byte("d1")),
+		bytes.NewReader([]byte("d2")),
+		bytes.NewReader([]byte("d3")),
+	}
+	s := NewTimeLineStore(3, 10000)
+	for _, sample := range samples {
+		if err := s.AddItem(sample); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return s
 }
