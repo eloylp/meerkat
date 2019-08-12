@@ -4,14 +4,27 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"time"
 )
 
+var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func ticket() int {
+	return seededRand.Int()
+}
+
 type Store interface {
 	AddItem(r io.Reader) error
-	Subscribe() chan io.Reader
+	Subscribe() (chan io.Reader, int)
+	Unsubscribe(ticket int) error
 	Length() uint
-	Close()
+	Reset()
+}
+
+type subscriber struct {
+	ch     chan io.Reader
+	ticket int
 }
 
 type dataFrame struct {
@@ -22,7 +35,7 @@ type dataFrame struct {
 
 type timeLineStore struct {
 	items                 []*dataFrame
-	subscribers           []chan io.Reader
+	subscribers           []subscriber
 	maxItems              uint
 	maxItemLength         uint64
 	subscribersBufferSize uint64
@@ -70,17 +83,43 @@ func (t *timeLineStore) gcItems() {
 
 func (t *timeLineStore) publish(df *dataFrame) {
 	for _, s := range t.subscribers {
-		s <- bytes.NewReader(df.data)
+		s.ch <- bytes.NewReader(df.data)
 	}
 }
-func (t *timeLineStore) Subscribe() chan io.Reader {
+func (t *timeLineStore) Subscribe() (chan io.Reader, int) {
 	ch := make(chan io.Reader, t.subscribersBufferSize)
-	t.subscribers = append(t.subscribers, ch)
-	return ch
+	ticket := ticket()
+	t.subscribers = append(t.subscribers, subscriber{ch, ticket})
+	return ch, ticket
 }
 
-func (t *timeLineStore) Close() {
-	for _, s := range t.subscribers {
-		close(s)
+func (t *timeLineStore) Unsubscribe(ticket int) error {
+	l := len(t.subscribers)
+	el := 0
+	if l > 0 {
+		el = l - 1
 	}
+	newSubs := make([]subscriber, el)
+	var found bool
+	for _, s := range t.subscribers {
+		if s.ticket != ticket {
+			newSubs = append(newSubs, s)
+		} else {
+			found = true
+			close(s.ch)
+		}
+	}
+	if found {
+		t.subscribers = newSubs
+		return nil
+	}
+	return newNotFoundError(ticket)
+}
+
+func (t *timeLineStore) Reset() {
+	for _, s := range t.subscribers {
+		close(s.ch)
+	}
+	t.subscribers = make([]subscriber, 1)
+	t.items = make([]*dataFrame, t.maxItems)
 }

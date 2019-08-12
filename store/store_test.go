@@ -8,12 +8,47 @@ import (
 	"testing"
 )
 
+func TestTimeLineStore_Subscribe(t *testing.T) {
+	s := populatedTimeLineStore(t)
+	_, ticket := s.Subscribe()
+	if ticket <= 0 {
+		t.Errorf("Ticket number must be above 0, got %v", ticket)
+	}
+}
+
+func TestTimeLineStore_Unsubscribe(t *testing.T) {
+	s := populatedTimeLineStore(t)
+	ch, ticket := s.Subscribe()
+	if err := s.Unsubscribe(ticket); err != nil {
+		t.Error(err)
+	}
+	_, ok := <-ch
+	if ok {
+		t.Error("Channel is not closed after unsubscribe")
+	}
+}
+
+func TestTimeLineStore_Unsubscribe_NotFound(t *testing.T) {
+	s := populatedTimeLineStore(t)
+	_, ticket := s.Subscribe()
+	if err := s.Unsubscribe(ticket); err != nil {
+		t.Error(err)
+	}
+	err := s.Unsubscribe(ticket)
+	switch err.(type) {
+	case *NotFoundError:
+		break
+	default:
+		t.Errorf("Expected not found error but got %v", err)
+	}
+}
+
 func TestTimeLineStore(t *testing.T) {
 
 	s := populatedTimeLineStore(t)
-	listenCh := s.Subscribe()
+	listenCh, _ := s.Subscribe()
 
-	s.Close()
+	s.Reset()
 	var count uint
 	count++
 	for item := range listenCh {
@@ -49,7 +84,7 @@ func populatedTimeLineStore(t *testing.T) *timeLineStore {
 func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 
 	s := populatedTimeLineStore(t)
-	subs := s.Subscribe()
+	subs, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +93,7 @@ func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 	if size != 3 {
 		t.Errorf("Expected resultant items is %v but %v obtained", expectedSize, size)
 	}
-	s.Close()
+	s.Reset()
 	var lastItemR io.Reader
 	for item := range subs {
 		lastItemR = item
