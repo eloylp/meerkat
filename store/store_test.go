@@ -10,18 +10,9 @@ import (
 
 func TestTimeLineStore(t *testing.T) {
 
-	samples := []io.Reader{
-		bytes.NewReader([]byte("d1")),
-		bytes.NewReader([]byte("d2")),
-		bytes.NewReader([]byte("d3")),
-	}
-	s := NewTimeLineStore(3, 10000)
+	s := populatedTimeLineStore(t)
 	listenCh := s.Subscribe()
-	for _, sample := range samples {
-		if err := s.AddItem(sample); err != nil {
-			t.Fatal(err)
-		}
-	}
+
 	s.Close()
 	var count uint
 	count++
@@ -38,6 +29,21 @@ func TestTimeLineStore(t *testing.T) {
 		count++
 	}
 
+}
+
+func populatedTimeLineStore(t *testing.T) *timeLineStore {
+	samples := []io.Reader{
+		bytes.NewReader([]byte("d1")),
+		bytes.NewReader([]byte("d2")),
+		bytes.NewReader([]byte("d3")),
+	}
+	s := NewTimeLineStore(3, 10000)
+	for _, sample := range samples {
+		if err := s.AddItem(sample); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return s
 }
 
 func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
@@ -66,19 +72,4 @@ func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 	if lastItem != expectedLastItem {
 		t.Errorf("Expected last item is %s but got %s", expectedLastItem, lastItem)
 	}
-}
-
-func populatedTimeLineStore(t *testing.T) *timeLineStore {
-	samples := []io.Reader{
-		bytes.NewReader([]byte("d1")),
-		bytes.NewReader([]byte("d2")),
-		bytes.NewReader([]byte("d3")),
-	}
-	s := NewTimeLineStore(3, 10000)
-	for _, sample := range samples {
-		if err := s.AddItem(sample); err != nil {
-			t.Fatal(err)
-		}
-	}
-	return s
 }
