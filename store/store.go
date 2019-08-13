@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math/rand"
+	"sync"
 	"time"
 )
 
@@ -39,9 +40,12 @@ type timeLineStore struct {
 	maxItems              uint
 	maxItemLength         uint64
 	subscribersBufferSize uint64
+	L                     sync.RWMutex
 }
 
 func (t *timeLineStore) Length() uint {
+	t.L.RLock()
+	defer t.L.RUnlock()
 	return uint(len(t.items))
 }
 
@@ -50,7 +54,8 @@ func NewTimeLineStore(maxItems uint, maxItemLength uint64) *timeLineStore {
 }
 
 func (t *timeLineStore) AddItem(r io.Reader) error {
-
+	t.L.Lock()
+	defer t.L.Unlock()
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -87,6 +92,8 @@ func (t *timeLineStore) publish(df *dataFrame) {
 	}
 }
 func (t *timeLineStore) Subscribe() (chan io.Reader, int) {
+	t.L.Lock()
+	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscribersBufferSize)
 	ticket := ticket()
 	t.subscribers = append(t.subscribers, subscriber{ch, ticket})
@@ -97,6 +104,8 @@ func (t *timeLineStore) Unsubscribe(ticket int) error {
 	if !t.exists(ticket) {
 		return newNotFoundError(ticket)
 	}
+	t.L.Lock()
+	defer t.L.Unlock()
 	el := t.estimateLength()
 	newSubs := make([]subscriber, el)
 	for _, s := range t.subscribers {
@@ -111,6 +120,8 @@ func (t *timeLineStore) Unsubscribe(ticket int) error {
 }
 
 func (t *timeLineStore) exists(ticket int) bool {
+	t.L.RLock()
+	defer t.L.RUnlock()
 	for _, s := range t.subscribers {
 		if s.ticket == ticket {
 			return true
@@ -129,6 +140,8 @@ func (t *timeLineStore) estimateLength() int {
 }
 
 func (t *timeLineStore) Reset() {
+	t.L.Lock()
+	defer t.L.Unlock()
 	for _, s := range t.subscribers {
 		close(s.ch)
 	}
