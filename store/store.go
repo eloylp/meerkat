@@ -94,26 +94,38 @@ func (t *timeLineStore) Subscribe() (chan io.Reader, int) {
 }
 
 func (t *timeLineStore) Unsubscribe(ticket int) error {
+	if !t.exists(ticket) {
+		return newNotFoundError(ticket)
+	}
+	el := t.estimateLength()
+	newSubs := make([]subscriber, el)
+	for _, s := range t.subscribers {
+		if s.ticket == ticket {
+			close(s.ch)
+		} else {
+			newSubs = append(newSubs, s)
+		}
+	}
+	t.subscribers = newSubs
+	return nil
+}
+
+func (t *timeLineStore) exists(ticket int) bool {
+	for _, s := range t.subscribers {
+		if s.ticket == ticket {
+			return true
+		}
+	}
+	return false
+}
+
+func (t *timeLineStore) estimateLength() int {
 	l := len(t.subscribers)
 	el := 0
 	if l > 0 {
 		el = l - 1
 	}
-	newSubs := make([]subscriber, el)
-	var found bool
-	for _, s := range t.subscribers {
-		if s.ticket != ticket {
-			newSubs = append(newSubs, s)
-		} else {
-			found = true
-			close(s.ch)
-		}
-	}
-	if found {
-		t.subscribers = newSubs
-		return nil
-	}
-	return newNotFoundError(ticket)
+	return el
 }
 
 func (t *timeLineStore) Reset() {
