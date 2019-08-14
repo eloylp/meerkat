@@ -18,14 +18,14 @@ func NewMJPEGDumper(w io.Writer) *mJPEGDumper {
 	return &mJPEGDumper{mimeWriter: multipart.NewWriter(w)}
 }
 
-func (d *mJPEGDumper) DumpPart(data []byte) error {
+func (d *mJPEGDumper) DumpPart(data io.Reader) error {
 	h := make(textproto.MIMEHeader)
 	h.Add("Content-Type", "image/jpeg")
 	w, err := d.mimeWriter.CreatePart(h)
 	if err != nil {
 		return err
 	}
-	if _, err := w.Write(data); err != nil {
+	if _, err := io.Copy(w, data); err != nil {
 		return err
 	}
 	return nil

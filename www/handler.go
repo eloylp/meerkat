@@ -14,12 +14,15 @@ func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (s *server) handleMJPEG(imageBuffer chan []byte) func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := dump.NewMJPEGDumper(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-		for image := range imageBuffer {
+
+		readers, _ := s.store.Subscribe()
+
+		for image := range readers {
 			if err := mimeWriter.DumpPart(image); err != nil {
 				_, _ = w.Write([]byte("Frame cannot be processed"))
 			}

@@ -1,5 +1,9 @@
 package dump
 
+import (
+	"io"
+)
+
 type Dumper interface {
-	DumpPart(data []byte) error
+	DumpPart(data io.Reader) error
 }

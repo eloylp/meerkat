@@ -1,7 +1,7 @@
 package fetch
 
 import (
-	"io/ioutil"
+	"go-sentinel/store"
 	"log"
 	"time"
 )
@@ -9,12 +9,12 @@ import (
 type dataPump struct {
 	interval uint
 	url      string
-	frames   chan []byte
 	fetcher  Fetcher
+	store    store.Store
 }
 
-func NewDataPump(interval uint, url string, frames chan []byte, fetcher Fetcher) *dataPump {
-	return &dataPump{interval: interval, url: url, frames: frames, fetcher: fetcher}
+func NewDataPump(interval uint, url string, fetcher Fetcher, store store.Store) *dataPump {
+	return &dataPump{interval: interval, url: url, fetcher: fetcher, store: store}
 }
 
 func (dp *dataPump) Start() {
@@ -24,10 +24,8 @@ func (dp *dataPump) Start() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		d, err := ioutil.ReadAll(reader)
-		if err != nil {
+		if err := dp.store.AddItem(reader); err != nil {
 			log.Fatal(err)
 		}
-		dp.frames <- d
 	}
 }

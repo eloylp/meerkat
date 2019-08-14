@@ -21,8 +21,9 @@ func TestNewMJPEGDumper(t *testing.T) {
 	w := new(bytes.Buffer)
 	d := dump.NewMJPEGDumper(w)
 	data := []byte("Data")
+	dataReader := bytes.NewReader(data)
 
-	if err := d.DumpPart(data); err != nil {
+	if err := d.DumpPart(dataReader); err != nil {
 		t.Error(err)
 	}
 	expectedPart := "--" + d.Boundary() + " Content-Type: image/jpeg  Data"
