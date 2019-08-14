@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"io/ioutil"
 	"log"
 	"time"
 )
@@ -19,10 +20,14 @@ func NewDataPump(interval uint, url string, frames chan []byte, fetcher Fetcher)
 func (dp *dataPump) Start() {
 	for {
 		time.Sleep(time.Duration(dp.interval) * time.Second)
-		frame, err := dp.fetcher.Fetch(dp.url)
+		reader, err := dp.fetcher.Fetch(dp.url)
 		if err != nil {
 			log.Fatal(err)
 		}
-		dp.frames <- frame
+		d, err := ioutil.ReadAll(reader)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dp.frames <- d
 	}
 }
