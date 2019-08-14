@@ -19,7 +19,7 @@ func ticket() int {
 type Store interface {
 	AddItem(r io.Reader) error
 	Subscribe() (chan io.Reader, int)
-	SubscribersNum() uint
+	Subscribers() uint
 	Unsubscribe(ticket int) error
 	Length() uint
 	Reset()
@@ -37,11 +37,11 @@ type dataFrame struct {
 }
 
 type timeLineStore struct {
-	items                 []*dataFrame
-	subscribers           []subscriber
-	maxItems              uint
-	subscribersBufferSize uint64
-	L                     sync.RWMutex
+	items              []*dataFrame
+	subscribers        []subscriber
+	maxItems           uint
+	subscriberBuffSize uint64
+	L                  sync.RWMutex
 }
 
 func (t *timeLineStore) Length() uint {
@@ -49,13 +49,15 @@ func (t *timeLineStore) Length() uint {
 	defer t.L.RUnlock()
 	return uint(len(t.items))
 }
-func (t *timeLineStore) SubscribersNum() uint {
+
+func (t *timeLineStore) Subscribers() uint {
 	t.L.RLock()
 	defer t.L.RUnlock()
 	return uint(len(t.subscribers))
 }
+
 func NewTimeLineStore(maxItems uint) *timeLineStore {
-	return &timeLineStore{maxItems: maxItems, subscribersBufferSize: 10}
+	return &timeLineStore{maxItems: maxItems, subscriberBuffSize: 10}
 }
 
 func (t *timeLineStore) AddItem(r io.Reader) error {
@@ -96,10 +98,11 @@ func (t *timeLineStore) publish(df *dataFrame) {
 		s.ch <- bytes.NewReader(df.data)
 	}
 }
+
 func (t *timeLineStore) Subscribe() (chan io.Reader, int) {
 	t.L.Lock()
 	defer t.L.Unlock()
-	ch := make(chan io.Reader, t.subscribersBufferSize)
+	ch := make(chan io.Reader, t.subscriberBuffSize)
 	ticket := ticket()
 	t.subscribers = append(t.subscribers, subscriber{ch, ticket})
 	return ch, ticket
@@ -111,8 +114,8 @@ func (t *timeLineStore) Unsubscribe(ticket int) error {
 	}
 	t.L.Lock()
 	defer t.L.Unlock()
-	el := t.estimateLength()
-	newSubs := make([]subscriber, 0, el)
+	ec := t.estimateCapacity()
+	newSubs := make([]subscriber, 0, ec)
 	for _, s := range t.subscribers {
 		if s.ticket == ticket {
 			close(s.ch)
@@ -136,13 +139,13 @@ func (t *timeLineStore) exists(ticket int) bool {
 	return false
 }
 
-func (t *timeLineStore) estimateLength() int {
-	l := len(t.subscribers)
-	el := 0
-	if l > 0 {
-		el = l - 1
+func (t *timeLineStore) estimateCapacity() int {
+	cl := len(t.subscribers)
+	ec := 0
+	if cl > 0 {
+		ec = cl - 1
 	}
-	return el
+	return ec
 }
 
 func (t *timeLineStore) Reset() {

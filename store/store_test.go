@@ -26,7 +26,7 @@ func TestTimeLineStore_Unsubscribe(t *testing.T) {
 	}
 
 	var expectedSubscribers uint = 1
-	subscribersNumResult := s.SubscribersNum()
+	subscribersNumResult := s.Subscribers()
 	if subscribersNumResult != expectedSubscribers {
 		t.Errorf("Expected subscribers after unsubscribe is %v got %v", expectedSubscribers, subscribersNumResult)
 	}
