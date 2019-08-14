@@ -7,6 +7,10 @@ import (
 
 const FrameStreamEndpoint = "/data"
 
+type Server interface {
+	Start() error
+}
+
 type server struct {
 	listenAddress string
 	store         store.Store

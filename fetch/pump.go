@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type DataPump interface {
+	Start()
+}
+
 type dataPump struct {
 	interval uint
 	url      string
