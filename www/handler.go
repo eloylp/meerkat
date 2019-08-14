@@ -3,6 +3,7 @@ package www
 import (
 	"fmt"
 	"go-sentinel/dump"
+	"log"
 	"net/http"
 )
 
@@ -20,7 +21,18 @@ func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
 
-		readers, _ := s.store.Subscribe()
+		readers, ticket := s.store.Subscribe()
+		notify := r.Context().Done()
+
+		go func() {
+			<-notify
+			if err := s.store.Unsubscribe(ticket); err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Client with socket %s left connection", r.RemoteAddr)
+		}()
+
+		log.Printf("Started data streaming to client with socket %s", r.RemoteAddr)
 
 		for image := range readers {
 			if err := mimeWriter.DumpPart(image); err != nil {

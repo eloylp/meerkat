@@ -19,11 +19,18 @@ func TestTimeLineStore_Subscribe(t *testing.T) {
 
 func TestTimeLineStore_Unsubscribe(t *testing.T) {
 	s := populatedTimeLineStore(t)
-	ch, ticket := s.Subscribe()
-	if err := s.Unsubscribe(ticket); err != nil {
+	_, _ = s.Subscribe()
+	ch2, ticket2 := s.Subscribe()
+	if err := s.Unsubscribe(ticket2); err != nil {
 		t.Error(err)
 	}
-	_, ok := <-ch
+
+	var expectedSubscribers uint = 1
+	subscribersNumResult := s.SubscribersNum()
+	if subscribersNumResult != expectedSubscribers {
+		t.Errorf("Expected subscribers after unsubscribe is %v got %v", expectedSubscribers, subscribersNumResult)
+	}
+	_, ok := <-ch2
 	if ok {
 		t.Error("Channel is not closed after unsubscribe")
 	}

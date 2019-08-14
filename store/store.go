@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"sync"
 	"time"
@@ -18,6 +19,7 @@ func ticket() int {
 type Store interface {
 	AddItem(r io.Reader) error
 	Subscribe() (chan io.Reader, int)
+	SubscribersNum() uint
 	Unsubscribe(ticket int) error
 	Length() uint
 	Reset()
@@ -48,7 +50,11 @@ func (t *timeLineStore) Length() uint {
 	defer t.L.RUnlock()
 	return uint(len(t.items))
 }
-
+func (t *timeLineStore) SubscribersNum() uint {
+	t.L.RLock()
+	defer t.L.RUnlock()
+	return uint(len(t.subscribers))
+}
 func NewTimeLineStore(maxItems uint, maxItemLength uint64) *timeLineStore {
 	return &timeLineStore{maxItems: maxItems, maxItemLength: maxItemLength, subscribersBufferSize: 10}
 }
@@ -107,7 +113,7 @@ func (t *timeLineStore) Unsubscribe(ticket int) error {
 	t.L.Lock()
 	defer t.L.Unlock()
 	el := t.estimateLength()
-	newSubs := make([]subscriber, el)
+	newSubs := make([]subscriber, 0, el)
 	for _, s := range t.subscribers {
 		if s.ticket == ticket {
 			close(s.ch)
@@ -116,6 +122,7 @@ func (t *timeLineStore) Unsubscribe(ticket int) error {
 		}
 	}
 	t.subscribers = newSubs
+	log.Printf("Unsubscribed ticket from store %v, pending tickets %v", ticket, len(t.subscribers))
 	return nil
 }
 
