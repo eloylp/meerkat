@@ -12,7 +12,7 @@ import (
 func main() {
 	cfg := config.C()
 	fetcher := fetch.NewHTTPFetcher(&http.Client{})
-	timeLineStore := store.NewTimeLineStore(10, 10000)
+	timeLineStore := store.NewTimeLineStore(10)
 	dataPump := fetch.NewDataPump(cfg.PollInterval, cfg.Resource, fetcher, timeLineStore)
 	go dataPump.Start()
 	server := www.NewServer(cfg.HTTPListenAddress, timeLineStore)

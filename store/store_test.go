@@ -80,7 +80,7 @@ func populatedTimeLineStore(t *testing.T) *timeLineStore {
 		bytes.NewReader([]byte("d2")),
 		bytes.NewReader([]byte("d3")),
 	}
-	s := NewTimeLineStore(3, 10000)
+	s := NewTimeLineStore(3)
 	for _, sample := range samples {
 		if err := s.AddItem(sample); err != nil {
 			t.Fatal(err)

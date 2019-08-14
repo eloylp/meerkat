@@ -40,7 +40,6 @@ type timeLineStore struct {
 	items                 []*dataFrame
 	subscribers           []subscriber
 	maxItems              uint
-	maxItemLength         uint64
 	subscribersBufferSize uint64
 	L                     sync.RWMutex
 }
@@ -55,8 +54,8 @@ func (t *timeLineStore) SubscribersNum() uint {
 	defer t.L.RUnlock()
 	return uint(len(t.subscribers))
 }
-func NewTimeLineStore(maxItems uint, maxItemLength uint64) *timeLineStore {
-	return &timeLineStore{maxItems: maxItems, maxItemLength: maxItemLength, subscribersBufferSize: 10}
+func NewTimeLineStore(maxItems uint) *timeLineStore {
+	return &timeLineStore{maxItems: maxItems, subscribersBufferSize: 10}
 }
 
 func (t *timeLineStore) AddItem(r io.Reader) error {
