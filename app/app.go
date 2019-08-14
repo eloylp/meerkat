@@ -8,8 +8,12 @@ import (
 	"net/http"
 )
 
+type Server interface {
+	Start() error
+}
+
 type App struct {
-	hTTPServer www.Server
+	hTTPServer Server
 	dataPump   fetch.DataPump
 }
 
