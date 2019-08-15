@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -68,6 +69,11 @@ func stringNotZero(k string, v string) error {
 		return errors.New(fmt.Sprintf("%s cannot be empty", k))
 	}
 	return nil
+}
+
+func parseResources(p string) []string {
+	p = strings.Replace(p, " ", "", -1)
+	return strings.Split(p, ",")
 }
 
 func uintNotZero(k string, v uint) error {
