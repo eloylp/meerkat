@@ -6,8 +6,8 @@ import (
 	"go-sentinel/config"
 	"go-sentinel/fetch"
 	"go-sentinel/store"
-	"go-sentinel/www"
 	"net/http"
+	"strconv"
 )
 
 type Server interface {
@@ -15,22 +15,36 @@ type Server interface {
 }
 
 type App struct {
-	hTTPServer Server
-	dataPump   fetch.DataPump
+	hTTPServer       Server
+	DataFlowRegistry *DataFlowRegistry
 }
 
 func NewApp(config config.Config) *App {
 
-	dataStore := store.NewTimeLineStore(10)
-	fetcher := fetch.NewHTTPFetcher(&http.Client{})
+	dfr := &DataFlowRegistry{}
+
+	for k, r := range config.Resources {
+		dataStore := store.NewTimeLineStore(10)
+		fetcher := fetch.NewHTTPFetcher(&http.Client{})
+		dataPump := fetch.NewDataPump(config.PollInterval, r, fetcher, dataStore)
+		dfr.Add(&DataFlow{
+			UUID:      "D" + strconv.Itoa(k),
+			Resource:  r,
+			DataStore: dataStore,
+			DataPump:  dataPump,
+		})
+	}
+
 	return &App{
-		hTTPServer: www.NewServer(config.HTTPListenAddress, dataStore),
-		dataPump:   fetch.NewDataPump(config.PollInterval, config.Resource, fetcher, dataStore),
+		hTTPServer:       newServer(config.HTTPListenAddress, dfr),
+		DataFlowRegistry: dfr,
 	}
 }
 
 func (a *App) Start() error {
-	go a.dataPump.Start()
+	for _, dataFlow := range a.DataFlowRegistry.DataFlows() {
+		go dataFlow.Start()
+	}
 	if err := a.hTTPServer.Start(); err != nil {
 		return err
 	}
@@ -38,24 +52,36 @@ func (a *App) Start() error {
 }
 
 type DataFlowRegistry struct {
-	DataFlows []*DataFlow
+	Flows []*DataFlow
+}
+
+func (dfr *DataFlowRegistry) DataFlows() []*DataFlow {
+	return dfr.Flows
 }
 
 func (dfr *DataFlowRegistry) Add(df *DataFlow) {
-	dfr.DataFlows = append(dfr.DataFlows, df)
+	dfr.Flows = append(dfr.Flows, df)
 }
 
 func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
-	for _, wf := range dfr.DataFlows {
+	for _, wf := range dfr.DataFlows() {
 		if wf.UUID == wfUid {
-			return wf.Store, nil
+			return wf.DataStore, nil
 		}
 	}
 	return nil, errors.New(fmt.Sprintf("Cannot find workflow %v", wfUid))
 }
 
 type DataFlow struct {
-	UUID  string
-	Store store.Store
-	Pump  fetch.DataPump
+	UUID      string
+	Resource  string
+	DataStore store.Store
+	DataPump  fetch.DataPump
+}
+
+func (df *DataFlow) Store() store.Store {
+	return df.DataStore
+}
+func (df *DataFlow) Start() {
+	df.DataPump.Start()
 }

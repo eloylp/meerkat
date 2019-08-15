@@ -28,7 +28,7 @@ func validateCases() []sample {
 	return []sample{
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "http://example.com/camdump.jpeg",
+			Resources:         []string{"http://example.com/camdump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    true,
@@ -36,7 +36,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    true,
@@ -44,7 +44,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      0,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    false,
@@ -52,7 +52,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "",
+			Resources:         []string{""},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    false,
@@ -60,7 +60,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "",
 		},
 			mustPass:    false,

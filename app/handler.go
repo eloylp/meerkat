@@ -1,16 +1,23 @@
-package www
+package app
 
 import (
 	"fmt"
 	"go-sentinel/dump"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/html")
-		html := fmt.Sprintf(`<!DOCTYPE html><html><body><img src="%s"></body></html>`, FrameStreamEndpoint)
+
+		var images string
+		for _, dataFlow := range s.dfr.DataFlows() {
+			images += fmt.Sprintf(`<img src=%s>`, FrameStreamEndpoint+dataFlow.UUID)
+		}
+
+		html := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, images)
 		_, _ = w.Write([]byte(html))
 	}
 }
@@ -20,13 +27,17 @@ func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
 		mimeWriter := dump.NewMJPEGDumper(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-
-		readers, ticket := s.store.Subscribe()
+		DataFlowUUID := strings.TrimPrefix(r.URL.Path, FrameStreamEndpoint)
+		store, err := s.dfr.FindStore(DataFlowUUID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		readers, ticket := store.Subscribe()
 		notify := r.Context().Done()
 
 		go func() {
 			<-notify
-			if err := s.store.Unsubscribe(ticket); err != nil {
+			if err := store.Unsubscribe(ticket); err != nil {
 				log.Fatal(err)
 			}
 			log.Printf("Client with socket %s left connection", r.RemoteAddr)

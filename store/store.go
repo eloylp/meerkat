@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Todo replace this with uuid (heres also a data race)
 var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func ticket() int {

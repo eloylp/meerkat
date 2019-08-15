@@ -45,22 +45,22 @@ func TestDataFlowRegistry_FindStore(t *testing.T) {
 
 	dfr := &app.DataFlowRegistry{}
 	dfr.Add(&app.DataFlow{
-		UUID:  "A1234",
-		Store: &StoreMock{},
-		Pump:  &PumpMock{},
+		UUID:      "A1234",
+		DataStore: &StoreMock{},
+		DataPump:  &PumpMock{},
 	})
 	targetUid := "A12345"
 	var expectedStoreLength uint = 12
 	dfr.Add(&app.DataFlow{
-		UUID:  targetUid,
-		Store: &StoreMock{MLength: expectedStoreLength},
-		Pump:  &PumpMock{},
+		UUID:      targetUid,
+		DataStore: &StoreMock{MLength: expectedStoreLength},
+		DataPump:  &PumpMock{},
 	})
 
 	dfr.Add(&app.DataFlow{
-		UUID:  "A123456",
-		Store: &StoreMock{},
-		Pump:  &PumpMock{},
+		UUID:      "A123456",
+		DataStore: &StoreMock{},
+		DataPump:  &PumpMock{},
 	})
 
 	result, err := dfr.FindStore(targetUid)

@@ -1,19 +1,18 @@
-package www
+package app
 
 import (
-	"go-sentinel/store"
 	"net/http"
 )
 
-const FrameStreamEndpoint = "/data"
+const FrameStreamEndpoint = "/data/"
 
 type server struct {
 	listenAddress string
-	store         store.Store
+	dfr           *DataFlowRegistry
 }
 
-func NewServer(listenAddress string, store store.Store) *server {
-	return &server{listenAddress: listenAddress, store: store}
+func newServer(listenAddress string, dfr *DataFlowRegistry) *server {
+	return &server{listenAddress: listenAddress, dfr: dfr}
 }
 
 func (s *server) Start() error {

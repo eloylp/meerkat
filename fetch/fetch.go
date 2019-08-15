@@ -1,7 +1,9 @@
 package fetch
 
 import (
+	"bytes"
 	"io"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -22,5 +24,14 @@ func (f *hTTPFetcher) Fetch(res string) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	return r.Body, nil
+	// TODO , investigate if is needed to read the entire body to close it.
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.Body.Close(); err != nil {
+		return nil, err
+	}
+	reader := bytes.NewReader(data)
+	return reader, nil
 }
