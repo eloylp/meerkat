@@ -1,8 +1,8 @@
 package fetch
 
 import (
-	"go-sentinel/store"
 	"log"
+	"meerkat/store"
 	"time"
 )
 

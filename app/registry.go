@@ -3,7 +3,7 @@ package app
 import (
 	"errors"
 	"fmt"
-	"go-sentinel/store"
+	"meerkat/store"
 )
 
 type dataPump interface {

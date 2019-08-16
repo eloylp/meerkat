@@ -1,10 +1,10 @@
 package app
 
 import (
-	"go-sentinel/config"
-	"go-sentinel/fetch"
-	"go-sentinel/store"
-	"go-sentinel/unique"
+	"meerkat/config"
+	"meerkat/fetch"
+	"meerkat/store"
+	"meerkat/unique"
 	"net/http"
 )
 

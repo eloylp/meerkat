@@ -2,8 +2,8 @@ package fetch_test
 
 import (
 	"bytes"
-	"go-sentinel/fetch"
 	"io/ioutil"
+	"meerkat/fetch"
 	"net/http"
 	"testing"
 )

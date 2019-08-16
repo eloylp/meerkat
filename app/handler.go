@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
-	"go-sentinel/writer"
 	"log"
+	"meerkat/writer"
 	"net/http"
 	"strings"
 )

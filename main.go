@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go-sentinel/app"
-	"go-sentinel/config"
 	"log"
+	"meerkat/app"
+	"meerkat/config"
 )
 
 func main() {

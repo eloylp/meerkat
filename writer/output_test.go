@@ -2,7 +2,7 @@ package writer_test
 
 import (
 	"bytes"
-	"go-sentinel/writer"
+	"meerkat/writer"
 	"regexp"
 	"testing"
 )

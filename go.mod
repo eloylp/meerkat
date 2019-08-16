@@ -1,4 +1,4 @@
-module go-sentinel
+module meerkat
 
 go 1.12
 
