@@ -3,23 +3,26 @@ package app
 import (
 	"errors"
 	"fmt"
-	"go-sentinel/fetch"
 	"go-sentinel/store"
 )
 
-type DataFlowRegistry struct {
-	Flows []*DataFlow
+type dataPump interface {
+	Start()
 }
 
-func (dfr *DataFlowRegistry) DataFlows() []*DataFlow {
+type dataFlowRegistry struct {
+	Flows []*dataFlow
+}
+
+func (dfr *dataFlowRegistry) DataFlows() []*dataFlow {
 	return dfr.Flows
 }
 
-func (dfr *DataFlowRegistry) Add(df *DataFlow) {
+func (dfr *dataFlowRegistry) Add(df *dataFlow) {
 	dfr.Flows = append(dfr.Flows, df)
 }
 
-func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
+func (dfr *dataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
 	for _, wf := range dfr.DataFlows() {
 		if wf.UUID == wfUid {
 			return wf.DataStore, nil
@@ -28,16 +31,16 @@ func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
 	return nil, errors.New(fmt.Sprintf("Cannot find workflow %v", wfUid))
 }
 
-type DataFlow struct {
+type dataFlow struct {
 	UUID      string
 	Resource  string
 	DataStore store.Store
-	DataPump  fetch.DataPump
+	DataPump  dataPump
 }
 
-func (df *DataFlow) Store() store.Store {
+func (df *dataFlow) Store() store.Store {
 	return df.DataStore
 }
-func (df *DataFlow) Start() {
+func (df *dataFlow) Start() {
 	df.DataPump.Start()
 }

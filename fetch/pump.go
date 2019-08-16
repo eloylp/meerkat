@@ -6,18 +6,14 @@ import (
 	"time"
 )
 
-type DataPump interface {
-	Start()
-}
-
 type dataPump struct {
 	interval uint
 	url      string
-	fetcher  Fetcher
+	fetcher  fetcher
 	store    store.Store
 }
 
-func NewDataPump(interval uint, url string, fetcher Fetcher, store store.Store) *dataPump {
+func NewDataPump(interval uint, url string, fetcher fetcher, store store.Store) *dataPump {
 	return &dataPump{interval: interval, url: url, fetcher: fetcher, store: store}
 }
 

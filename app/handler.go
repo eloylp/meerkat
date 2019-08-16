@@ -2,19 +2,19 @@ package app
 
 import (
 	"fmt"
-	"go-sentinel/dump"
+	"go-sentinel/writer"
 	"log"
 	"net/http"
 	"strings"
 )
 
-func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleHTMLClient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/html")
 
 		var images string
 		for _, dataFlow := range s.dfr.DataFlows() {
-			images += fmt.Sprintf(`<img src=%s>`, FrameStreamEndpoint+dataFlow.UUID)
+			images += fmt.Sprintf(`<img src=%s>`, DataStreamPath+dataFlow.UUID)
 		}
 
 		html := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, images)
@@ -22,22 +22,22 @@ func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleMJPEG() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		mimeWriter := dump.NewMJPEGDumper(w)
+		mimeWriter := writer.NewMJPEGWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-		DataFlowUUID := strings.TrimPrefix(r.URL.Path, FrameStreamEndpoint)
+		DataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
 		store, err := s.dfr.FindStore(DataFlowUUID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		readers, ticket := store.Subscribe()
+		readers, uuid := store.Subscribe()
 		notify := r.Context().Done()
 
 		go func() {
 			<-notify
-			if err := store.Unsubscribe(ticket); err != nil {
+			if err := store.Unsubscribe(uuid); err != nil {
 				log.Fatal(err)
 			}
 			log.Printf("Client with socket %s left connection", r.RemoteAddr)
@@ -45,8 +45,8 @@ func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Started data streaming to client with socket %s", r.RemoteAddr)
 
-		for image := range readers {
-			if err := mimeWriter.DumpPart(image); err != nil {
+		for reader := range readers {
+			if err := mimeWriter.WritePart(reader); err != nil {
 				_, _ = w.Write([]byte("Frame cannot be processed"))
 			}
 		}

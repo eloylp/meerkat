@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type Fetcher interface {
+type fetcher interface {
 	Fetch(res string) (io.Reader, error)
 }
 
