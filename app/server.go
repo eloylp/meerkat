@@ -4,21 +4,22 @@ import (
 	"net/http"
 )
 
-const FrameStreamEndpoint = "/data/"
+const DataStreamPath = "/data/"
+const DashboardPath = "/"
 
 type server struct {
 	listenAddress string
-	dfr           *DataFlowRegistry
+	dfr           *dataFlowRegistry
 }
 
-func newServer(listenAddress string, dfr *DataFlowRegistry) *server {
+func newHTTPServer(listenAddress string, dfr *dataFlowRegistry) *server {
 	return &server{listenAddress: listenAddress, dfr: dfr}
 }
 
 func (s *server) Start() error {
 	h := http.NewServeMux()
-	h.HandleFunc("/", s.handleHTMLClient())
-	h.HandleFunc(FrameStreamEndpoint, s.handleMJPEG())
+	h.HandleFunc(DashboardPath, s.handleHTMLClient())
+	h.HandleFunc(DataStreamPath, s.handleMJPEG())
 	if err := http.ListenAndServe(s.listenAddress, h); err != nil {
 		return err
 	}

@@ -2,42 +2,42 @@ package app
 
 import (
 	"fmt"
-	"go-sentinel/dump"
+	"go-sentinel/writer"
 	"log"
 	"net/http"
 	"strings"
 )
 
-func (s *server) handleHTMLClient() func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleHTMLClient() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Add("Content-type", "text/html")
+		r.Header.Add("Content-type", "text/h")
 
-		var images string
-		for _, dataFlow := range s.dfr.DataFlows() {
-			images += fmt.Sprintf(`<img src=%s>`, FrameStreamEndpoint+dataFlow.UUID)
+		var img string
+		for _, df := range s.dfr.DataFlows() {
+			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID)
 		}
 
-		html := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, images)
-		_, _ = w.Write([]byte(html))
+		doc := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, img)
+		_, _ = w.Write([]byte(doc))
 	}
 }
 
-func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleMJPEG() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		mimeWriter := dump.NewMJPEGDumper(w)
-		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mimeWriter.Boundary())
+		mJPEGWriter := writer.NewMJPEGWriter(w)
+		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mJPEGWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-		DataFlowUUID := strings.TrimPrefix(r.URL.Path, FrameStreamEndpoint)
+		DataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
 		store, err := s.dfr.FindStore(DataFlowUUID)
 		if err != nil {
 			log.Fatal(err)
 		}
-		readers, ticket := store.Subscribe()
+		readers, uuid := store.Subscribe()
 		notify := r.Context().Done()
 
 		go func() {
 			<-notify
-			if err := store.Unsubscribe(ticket); err != nil {
+			if err := store.Unsubscribe(uuid); err != nil {
 				log.Fatal(err)
 			}
 			log.Printf("Client with socket %s left connection", r.RemoteAddr)
@@ -45,8 +45,8 @@ func (s *server) handleMJPEG() func(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Started data streaming to client with socket %s", r.RemoteAddr)
 
-		for image := range readers {
-			if err := mimeWriter.DumpPart(image); err != nil {
+		for reader := range readers {
+			if err := mJPEGWriter.WritePart(reader); err != nil {
 				_, _ = w.Write([]byte("Frame cannot be processed"))
 			}
 		}

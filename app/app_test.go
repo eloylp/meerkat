@@ -1,66 +1,65 @@
-package app_test
+package app
 
 import (
-	"go-sentinel/app"
 	"io"
 	"testing"
 )
 
-type StoreMock struct {
+type storeMock struct {
 	MLength uint
 }
 
-func (s StoreMock) AddItem(r io.Reader) error {
+func (s storeMock) AddItem(r io.Reader) error {
 	panic("implement me")
 }
 
-func (s StoreMock) Subscribe() (chan io.Reader, string) {
+func (s storeMock) Subscribe() (chan io.Reader, string) {
 	panic("implement me")
 }
 
-func (s StoreMock) Subscribers() uint {
+func (s storeMock) Subscribers() uint {
 	panic("implement me")
 }
 
-func (s StoreMock) Unsubscribe(ticket string) error {
+func (s storeMock) Unsubscribe(ticket string) error {
 	panic("implement me")
 }
 
-func (s StoreMock) Length() uint {
+func (s storeMock) Length() uint {
 	return s.MLength
 }
 
-func (s StoreMock) Reset() {
+func (s storeMock) Reset() {
 	panic("implement me")
 }
 
-type PumpMock struct {
+type pumpMock struct {
 }
 
-func (p PumpMock) Start() {
+func (p pumpMock) Start() {
 	panic("implement me")
 }
 
 func TestDataFlowRegistry_FindStore(t *testing.T) {
 
-	dfr := &app.DataFlowRegistry{}
-	dfr.Add(&app.DataFlow{
+	dfr := &dataFlowRegistry{}
+	dfr.Add(&dataFlow{
 		UUID:      "A1234",
-		DataStore: &StoreMock{},
-		DataPump:  &PumpMock{},
+		DataStore: &storeMock{},
+		DataPump:  &pumpMock{},
 	})
 	targetUid := "A12345"
 	var expectedStoreLength uint = 12
-	dfr.Add(&app.DataFlow{
+	dfr.Add(&dataFlow{
 		UUID:      targetUid,
-		DataStore: &StoreMock{MLength: expectedStoreLength},
-		DataPump:  &PumpMock{},
+		DataStore: &storeMock{MLength: expectedStoreLength},
+		DataPump:  &pumpMock{},
 	})
 
-	dfr.Add(&app.DataFlow{
+	dfr.Add(&dataFlow{
 		UUID:      "A123456",
-		DataStore: &StoreMock{},
-		DataPump:  &PumpMock{},
+		DataStore: &storeMock{},
+		DataPump:  &pumpMock{},
 	})
 
 	result, err := dfr.FindStore(targetUid)

@@ -1,4 +1,4 @@
-package dump
+package writer
 
 import (
 	"io"
@@ -6,19 +6,19 @@ import (
 	"net/textproto"
 )
 
-type mJPEGDumper struct {
+type mJPEGWriter struct {
 	mimeWriter *multipart.Writer
 }
 
-func (d *mJPEGDumper) Boundary() string {
+func (d *mJPEGWriter) Boundary() string {
 	return d.mimeWriter.Boundary()
 }
 
-func NewMJPEGDumper(w io.Writer) *mJPEGDumper {
-	return &mJPEGDumper{mimeWriter: multipart.NewWriter(w)}
+func NewMJPEGWriter(w io.Writer) *mJPEGWriter {
+	return &mJPEGWriter{mimeWriter: multipart.NewWriter(w)}
 }
 
-func (d *mJPEGDumper) DumpPart(data io.Reader) error {
+func (d *mJPEGWriter) WritePart(data io.Reader) error {
 	h := make(textproto.MIMEHeader)
 	h.Add("Content-Type", "image/jpeg")
 	w, err := d.mimeWriter.CreatePart(h)
