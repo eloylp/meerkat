@@ -2,33 +2,26 @@ package store
 
 import (
 	"bytes"
+	"go-sentinel/unique"
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"sync"
 	"time"
 )
 
-// Todo replace this with uuid (heres also a data race)
-var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-func ticket() int {
-	return seededRand.Int()
-}
-
 type Store interface {
 	AddItem(r io.Reader) error
-	Subscribe() (chan io.Reader, int)
+	Subscribe() (chan io.Reader, string)
 	Subscribers() uint
-	Unsubscribe(ticket int) error
+	Unsubscribe(uuid string) error
 	Length() uint
 	Reset()
 }
 
 type subscriber struct {
-	ch     chan io.Reader
-	ticket int
+	ch   chan io.Reader
+	UUID string
 }
 
 type dataFrame struct {
@@ -100,40 +93,40 @@ func (t *timeLineStore) publish(df *dataFrame) {
 	}
 }
 
-func (t *timeLineStore) Subscribe() (chan io.Reader, int) {
+func (t *timeLineStore) Subscribe() (chan io.Reader, string) {
 	t.L.Lock()
 	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscriberBuffSize)
-	ticket := ticket()
-	t.subscribers = append(t.subscribers, subscriber{ch, ticket})
-	return ch, ticket
+	uuid := unique.UUID4()
+	t.subscribers = append(t.subscribers, subscriber{ch, uuid})
+	return ch, uuid
 }
 
-func (t *timeLineStore) Unsubscribe(ticket int) error {
-	if !t.exists(ticket) {
-		return newNotFoundError(ticket)
+func (t *timeLineStore) Unsubscribe(uuid string) error {
+	if !t.exists(uuid) {
+		return newNotFoundError(uuid)
 	}
 	t.L.Lock()
 	defer t.L.Unlock()
 	ec := t.estimateCapacity()
 	newSubs := make([]subscriber, 0, ec)
 	for _, s := range t.subscribers {
-		if s.ticket == ticket {
+		if s.UUID == uuid {
 			close(s.ch)
 		} else {
 			newSubs = append(newSubs, s)
 		}
 	}
 	t.subscribers = newSubs
-	log.Printf("Unsubscribed ticket from store %v, pending tickets %v", ticket, len(t.subscribers))
+	log.Printf("Unsubscribed UUID from store %v, pending uuids %v", uuid, len(t.subscribers))
 	return nil
 }
 
-func (t *timeLineStore) exists(ticket int) bool {
+func (t *timeLineStore) exists(uuid string) bool {
 	t.L.RLock()
 	defer t.L.RUnlock()
 	for _, s := range t.subscribers {
-		if s.ticket == ticket {
+		if s.UUID == uuid {
 			return true
 		}
 	}

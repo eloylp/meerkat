@@ -11,17 +11,17 @@ import (
 
 func TestTimeLineStore_Subscribe(t *testing.T) {
 	s := populatedTimeLineStore(t)
-	_, ticket := s.Subscribe()
-	if ticket <= 0 {
-		t.Errorf("Ticket number must be above 0, got %v", ticket)
+	_, uuid := s.Subscribe()
+	if uuid == "" {
+		t.Errorf("Ticket number must be above 0, got %v", uuid)
 	}
 }
 
 func TestTimeLineStore_Unsubscribe(t *testing.T) {
 	s := populatedTimeLineStore(t)
 	_, _ = s.Subscribe()
-	ch2, ticket2 := s.Subscribe()
-	if err := s.Unsubscribe(ticket2); err != nil {
+	ch2, uuid2 := s.Subscribe()
+	if err := s.Unsubscribe(uuid2); err != nil {
 		t.Error(err)
 	}
 
@@ -38,11 +38,11 @@ func TestTimeLineStore_Unsubscribe(t *testing.T) {
 
 func TestTimeLineStore_Unsubscribe_NotFound(t *testing.T) {
 	s := populatedTimeLineStore(t)
-	_, ticket := s.Subscribe()
-	if err := s.Unsubscribe(ticket); err != nil {
+	_, uuid := s.Subscribe()
+	if err := s.Unsubscribe(uuid); err != nil {
 		t.Error(err)
 	}
-	err := s.Unsubscribe(ticket)
+	err := s.Unsubscribe(uuid)
 	switch err.(type) {
 	case *NotFoundError:
 		break

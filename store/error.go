@@ -4,14 +4,14 @@ import (
 	"fmt"
 )
 
-func newNotFoundError(ticket int) *NotFoundError {
-	return &NotFoundError{ticket: ticket}
+func newNotFoundError(uuid string) *NotFoundError {
+	return &NotFoundError{uuid: uuid}
 }
 
 type NotFoundError struct {
-	ticket int
+	uuid string
 }
 
 func (e *NotFoundError) Error() string {
-	return fmt.Sprintf("Cannot found subscriber with ticket %v", e.ticket)
+	return fmt.Sprintf("Cannot found subscriber with UUID %v", e.uuid)
 }

@@ -14,7 +14,7 @@ func (s StoreMock) AddItem(r io.Reader) error {
 	panic("implement me")
 }
 
-func (s StoreMock) Subscribe() (chan io.Reader, int) {
+func (s StoreMock) Subscribe() (chan io.Reader, string) {
 	panic("implement me")
 }
 
@@ -22,7 +22,7 @@ func (s StoreMock) Subscribers() uint {
 	panic("implement me")
 }
 
-func (s StoreMock) Unsubscribe(ticket int) error {
+func (s StoreMock) Unsubscribe(ticket string) error {
 	panic("implement me")
 }
 
