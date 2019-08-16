@@ -31,7 +31,7 @@ func C() Config {
 	once.Do(func() {
 		cfg = Config{}
 		var resources string
-		flag.StringVar(&resources, "u", "", "The URL to recover frames from")
+		flag.StringVar(&resources, "u", "", "The comma separated URLS to recover frames from")
 		flag.UintVar(&cfg.PollInterval, "i", 1, "The interval to fill the frame buffer")
 		flag.StringVar(&cfg.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
 		flag.Parse()
