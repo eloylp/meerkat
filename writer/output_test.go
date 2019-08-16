@@ -1,8 +1,8 @@
-package dump_test
+package writer_test
 
 import (
 	"bytes"
-	"go-sentinel/dump"
+	"go-sentinel/writer"
 	"regexp"
 	"testing"
 )
@@ -10,7 +10,7 @@ import (
 func TestMJPEGDumper_Boundary(t *testing.T) {
 	const expectedBoundaryLength = 60
 	w := new(bytes.Buffer)
-	d := dump.NewMJPEGDumper(w)
+	d := writer.NewMJPEGWriter(w)
 	bLength := len(d.Boundary())
 	if bLength != expectedBoundaryLength {
 		t.Errorf("Expected boundary is %v and was %v", expectedBoundaryLength, bLength)
@@ -19,10 +19,11 @@ func TestMJPEGDumper_Boundary(t *testing.T) {
 
 func TestNewMJPEGDumper(t *testing.T) {
 	w := new(bytes.Buffer)
-	d := dump.NewMJPEGDumper(w)
+	d := writer.NewMJPEGWriter(w)
 	data := []byte("Data")
+	dataReader := bytes.NewReader(data)
 
-	if err := d.DumpPart(data); err != nil {
+	if err := d.WritePart(dataReader); err != nil {
 		t.Error(err)
 	}
 	expectedPart := "--" + d.Boundary() + " Content-Type: image/jpeg  Data"

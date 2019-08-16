@@ -1,6 +1,7 @@
 package config
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -27,7 +28,7 @@ func validateCases() []sample {
 	return []sample{
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "http://example.com/camdump.jpeg",
+			Resources:         []string{"http://example.com/camdump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    true,
@@ -35,7 +36,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    true,
@@ -43,7 +44,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      0,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    false,
@@ -51,7 +52,7 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "",
+			Resources:         []string{""},
 			HTTPListenAddress: "0.0.0.0:8080",
 		},
 			mustPass:    false,
@@ -59,11 +60,45 @@ func validateCases() []sample {
 		},
 		{config: Config{
 			PollInterval:      1,
-			Resource:          "/var/motion/dump.jpeg",
+			Resources:         []string{"/var/motion/dump.jpeg"},
 			HTTPListenAddress: "",
 		},
 			mustPass:    false,
 			description: "Must not accept a config with no http listen address setting",
 		},
+	}
+}
+
+func Test_parseResources(t *testing.T) {
+
+	type sample struct {
+		Input       string
+		Expected    []string
+		Description string
+	}
+
+	s := []sample{
+		{
+			Input:       "http://example.com/image.jpg",
+			Expected:    []string{"http://example.com/image.jpg"},
+			Description: "Must accept single URL resource",
+		},
+		{
+			Input:       "http://example.com/image.jpg,http://example.com/image2.jpg",
+			Expected:    []string{"http://example.com/image.jpg", "http://example.com/image2.jpg"},
+			Description: "Must accept multiple URL resource",
+		},
+		{
+			Input:       "  http://example.com/image.jpg,  http://example.com/image2.jpg  ",
+			Expected:    []string{"http://example.com/image.jpg", "http://example.com/image2.jpg"},
+			Description: "Must accept multiple URL resource",
+		},
+	}
+
+	for _, c := range s {
+		result := parseResources(c.Input)
+		if !reflect.DeepEqual(result, c.Expected) {
+			t.Errorf("Cannot ensure case '%s', expected output is %v but got %v", c.Description, c.Expected, result)
+		}
 	}
 }

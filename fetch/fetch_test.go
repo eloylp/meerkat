@@ -24,12 +24,17 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 		}
 	})
 	fetcher := fetch.NewHTTPFetcher(client)
-	data, err := fetcher.Fetch(resUrl)
+	reader, err := fetcher.Fetch(resUrl)
+	d, err := ioutil.ReadAll(reader)
 	if err != nil {
 		t.Error(err)
 	}
-	if string(data) != body {
-		t.Errorf("Expected body is %v got %v", body, data)
+
+	if err != nil {
+		t.Error(err)
+	}
+	if string(d) != body {
+		t.Errorf("Expected body is %v got %v", body, reader)
 	}
 }
 

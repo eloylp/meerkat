@@ -5,11 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 )
 
 type Config struct {
-	Resource          string
+	Resources         []string
 	PollInterval      uint
 	HTTPListenAddress string
 }
@@ -29,10 +30,12 @@ func init() {
 func C() Config {
 	once.Do(func() {
 		cfg = Config{}
-		flag.StringVar(&cfg.Resource, "u", "", "The URL to recover frames from")
+		var resources string
+		flag.StringVar(&resources, "u", "", "The comma separated URLS to recover frames from")
 		flag.UintVar(&cfg.PollInterval, "i", 1, "The interval to fill the frame buffer")
 		flag.StringVar(&cfg.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
 		flag.Parse()
+		cfg.Resources = parseResources(resources)
 		if err := validate(cfg); err != nil {
 			flag.PrintDefaults()
 			os.Exit(1)
@@ -48,7 +51,13 @@ type validator interface {
 type ResourceValidator struct{}
 
 func (ResourceValidator) validate(c Config) error {
-	return stringNotZero("Resource", c.Resource)
+	for _, r := range c.Resources {
+		if err := stringNotZero("Resource", r); err != nil {
+			return err
+		}
+
+	}
+	return nil
 }
 
 type PollIntervalValidator struct{}
@@ -68,6 +77,11 @@ func stringNotZero(k string, v string) error {
 		return errors.New(fmt.Sprintf("%s cannot be empty", k))
 	}
 	return nil
+}
+
+func parseResources(p string) []string {
+	p = strings.Replace(p, " ", "", -1)
+	return strings.Split(p, ",")
 }
 
 func uintNotZero(k string, v uint) error {
