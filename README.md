@@ -12,7 +12,9 @@ binary for your architecture.
 
 You can also try this one liner install:
 ```bash
-
+sudo curl -L "https://github.com/eloylp/meerkat/releases/download/v0.1.1/meerkat_0.1.1_Linux_x86_64" \
+-o /usr/local/bin/meerkat \
+&& sudo chmod +x /usr/local/bin/meerkat
 ```
 
 ## How to run 
