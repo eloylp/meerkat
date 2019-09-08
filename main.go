@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/eloylp/meerkat/app"
+	"github.com/eloylp/meerkat/config"
 	"log"
-	"meerkat/app"
-	"meerkat/config"
 )
 
 func main() {

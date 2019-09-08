@@ -2,7 +2,7 @@ package writer_test
 
 import (
 	"bytes"
-	"meerkat/writer"
+	"github.com/eloylp/meerkat/writer"
 	"regexp"
 	"testing"
 )

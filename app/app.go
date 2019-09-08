@@ -1,10 +1,10 @@
 package app
 
 import (
-	"meerkat/config"
-	"meerkat/fetch"
-	"meerkat/store"
-	"meerkat/unique"
+	"github.com/eloylp/meerkat/config"
+	"github.com/eloylp/meerkat/fetch"
+	"github.com/eloylp/meerkat/store"
+	"github.com/eloylp/meerkat/unique"
 	"net/http"
 )
 

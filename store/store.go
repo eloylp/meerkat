@@ -2,10 +2,10 @@ package store
 
 import (
 	"bytes"
+	"github.com/eloylp/meerkat/unique"
 	"io"
 	"io/ioutil"
 	"log"
-	"meerkat/unique"
 	"sync"
 	"time"
 )

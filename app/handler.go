@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
+	"github.com/eloylp/meerkat/writer"
 	"log"
-	"meerkat/writer"
 	"net/http"
 	"strings"
 )

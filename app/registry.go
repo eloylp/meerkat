@@ -3,7 +3,7 @@ package app
 import (
 	"errors"
 	"fmt"
-	"meerkat/store"
+	"github.com/eloylp/meerkat/store"
 )
 
 type dataPump interface {
