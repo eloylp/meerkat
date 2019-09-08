@@ -1,4 +1,4 @@
-module meerkat
+module github.com/eloylp/meerkat
 
 go 1.13
 
