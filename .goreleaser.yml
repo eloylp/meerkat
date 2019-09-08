@@ -3,6 +3,8 @@ before:
     - go mod download
 builds:
   - binary: meerkat
+    ldflags:
+      - -s -w -X main.version={{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
