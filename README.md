@@ -7,7 +7,7 @@ presenting them on a browser.
 
 ## How to install
 
-You can go to the [releases page](https://github.com/eloylp/meerkat/releases) and download the lastest
+You can go to the [releases page](https://github.com/eloylp/meerkat/releases) and download the latest
 binary for your architecture.
 
 You can also try this one liner install:
