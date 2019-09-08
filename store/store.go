@@ -2,10 +2,10 @@ package store
 
 import (
 	"bytes"
+	"github.com/eloylp/meerkat/unique"
 	"io"
 	"io/ioutil"
 	"log"
-	"meerkat/unique"
 	"sync"
 	"time"
 )
@@ -99,6 +99,11 @@ func (t *timeLineStore) Subscribe() (chan io.Reader, string) {
 	ch := make(chan io.Reader, t.subscriberBuffSize)
 	uuid := unique.UUID4()
 	t.subscribers = append(t.subscribers, subscriber{ch, uuid})
+	for _, frame := range t.items {
+		if frame != nil {
+			ch <- bytes.NewReader(frame.data)
+		}
+	}
 	return ch, uuid
 }
 
@@ -148,6 +153,6 @@ func (t *timeLineStore) Reset() {
 	for _, s := range t.subscribers {
 		close(s.ch)
 	}
-	t.subscribers = make([]subscriber, 1)
-	t.items = make([]*dataFrame, t.maxItems)
+	t.subscribers = nil
+	t.items = nil
 }

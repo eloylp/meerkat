@@ -2,8 +2,8 @@ package fetch_test
 
 import (
 	"bytes"
+	"github.com/eloylp/meerkat/fetch"
 	"io/ioutil"
-	"meerkat/fetch"
 	"net/http"
 	"testing"
 )

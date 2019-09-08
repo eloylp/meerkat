@@ -1,8 +1,8 @@
 package fetch
 
 import (
+	"github.com/eloylp/meerkat/store"
 	"log"
-	"meerkat/store"
 	"time"
 )
 

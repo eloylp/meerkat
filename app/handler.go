@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
+	"github.com/eloylp/meerkat/writer"
 	"log"
-	"meerkat/writer"
 	"net/http"
 	"strings"
 )
@@ -27,8 +27,8 @@ func (s *server) handleMJPEG() http.HandlerFunc {
 		mJPEGWriter := writer.NewMJPEGWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mJPEGWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-		DataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
-		store, err := s.dfr.FindStore(DataFlowUUID)
+		dataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
+		store, err := s.dfr.FindStore(dataFlowUUID)
 		if err != nil {
 			log.Fatal(err)
 		}
