@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/eloylp/meerkat/flow"
 	"net/http"
 )
 
@@ -9,10 +10,10 @@ const DashboardPath = "/"
 
 type server struct {
 	listenAddress string
-	dfr           *DataFlowRegistry
+	dfr           *flow.DataFlowRegistry
 }
 
-func newHTTPServer(listenAddress string, dfr *DataFlowRegistry) *server {
+func newHTTPServer(listenAddress string, dfr *flow.DataFlowRegistry) *server {
 	return &server{listenAddress: listenAddress, dfr: dfr}
 }
 

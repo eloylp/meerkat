@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/eloylp/meerkat/config"
 	"github.com/eloylp/meerkat/fetch"
+	"github.com/eloylp/meerkat/flow"
 	"github.com/eloylp/meerkat/store"
 	"github.com/eloylp/meerkat/unique"
 	"net/http"
@@ -10,18 +11,18 @@ import (
 
 type App struct {
 	httpServer       *server
-	dataFlowRegistry *DataFlowRegistry
+	dataFlowRegistry *flow.DataFlowRegistry
 }
 
 func NewApp(cfg config.Config) *App {
 
-	dfr := &DataFlowRegistry{}
+	dfr := &flow.DataFlowRegistry{}
 
 	for _, r := range cfg.Resources {
 		dataStore := store.NewTimeLineStore(10)
 		fetcher := fetch.NewHTTPFetcher(&http.Client{})
 		dataPump := fetch.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
-		dfr.Add(&DataFlow{
+		dfr.Add(&flow.DataFlow{
 			UUID:      unique.UUID4(),
 			Resource:  r,
 			DataStore: dataStore,
