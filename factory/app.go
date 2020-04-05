@@ -1,4 +1,4 @@
-package app
+package factory
 
 import (
 	"github.com/eloylp/meerkat/config"
