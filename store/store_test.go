@@ -25,7 +25,7 @@ func TestTimeLineStore_Unsubscribe(t *testing.T) {
 		t.Error(err)
 	}
 
-	var expectedSubscribers uint = 1
+	expectedSubscribers := 1
 	subscribersNumResult := s.Subscribers()
 	if subscribersNumResult != expectedSubscribers {
 		t.Errorf("Expected subscribers after unsubscribe is %v got %v", expectedSubscribers, subscribersNumResult)
@@ -84,8 +84,8 @@ func TestTimeLineStore(t *testing.T) {
 	listenCh, _ := s.Subscribe()
 
 	s.Reset()
-	var dataCount uint
-	var itemCount uint
+	var dataCount int
+	var itemCount int
 	dataCount++
 	for item := range listenCh {
 		itemCount++

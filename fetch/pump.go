@@ -7,13 +7,13 @@ import (
 )
 
 type dataPump struct {
-	interval uint
+	interval int
 	url      string
 	fetcher  fetcher
 	store    store.Store
 }
 
-func NewDataPump(interval uint, url string, fetcher fetcher, store store.Store) *dataPump {
+func NewDataPump(interval int, url string, fetcher fetcher, store store.Store) *dataPump {
 	return &dataPump{interval: interval, url: url, fetcher: fetcher, store: store}
 }
 

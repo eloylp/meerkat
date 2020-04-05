@@ -13,9 +13,9 @@ import (
 type Store interface {
 	AddItem(r io.Reader) error
 	Subscribe() (chan io.Reader, string)
-	Subscribers() uint
+	Subscribers() int
 	Unsubscribe(uuid string) error
-	Length() uint
+	Length() int
 	Reset()
 }
 
@@ -26,31 +26,31 @@ type subscriber struct {
 
 type dataFrame struct {
 	timeStamp time.Time
-	length    uint64
+	length    int
 	data      []byte
 }
 
 type timeLineStore struct {
 	items              []*dataFrame
 	subscribers        []subscriber
-	maxItems           uint
-	subscriberBuffSize uint64
+	maxItems           int
+	subscriberBuffSize int
 	L                  sync.RWMutex
 }
 
-func (t *timeLineStore) Length() uint {
+func (t *timeLineStore) Length() int {
 	t.L.RLock()
 	defer t.L.RUnlock()
-	return uint(len(t.items))
+	return len(t.items)
 }
 
-func (t *timeLineStore) Subscribers() uint {
+func (t *timeLineStore) Subscribers() int {
 	t.L.RLock()
 	defer t.L.RUnlock()
-	return uint(len(t.subscribers))
+	return len(t.subscribers)
 }
 
-func NewTimeLineStore(maxItems uint) *timeLineStore {
+func NewTimeLineStore(maxItems int) *timeLineStore {
 	return &timeLineStore{maxItems: maxItems, subscriberBuffSize: 10}
 }
 
@@ -63,7 +63,7 @@ func (t *timeLineStore) AddItem(r io.Reader) error {
 	}
 	frame := &dataFrame{
 		timeStamp: time.Now(),
-		length:    uint64(len(data)),
+		length:    len(data),
 		data:      data,
 	}
 
@@ -78,7 +78,7 @@ func (t *timeLineStore) store(frame *dataFrame) {
 }
 
 func (t *timeLineStore) gcItems() {
-	l := uint(len(t.items))
+	l := len(t.items)
 	if l > t.maxItems {
 		i := make([]*dataFrame, t.maxItems)
 		e := t.items[1:l]

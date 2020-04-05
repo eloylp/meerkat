@@ -6,7 +6,7 @@ import (
 )
 
 type storeMock struct {
-	MLength uint
+	MLength int
 }
 
 func (s storeMock) AddItem(r io.Reader) error {
@@ -17,7 +17,7 @@ func (s storeMock) Subscribe() (chan io.Reader, string) {
 	panic("implement me")
 }
 
-func (s storeMock) Subscribers() uint {
+func (s storeMock) Subscribers() int {
 	panic("implement me")
 }
 
@@ -25,7 +25,7 @@ func (s storeMock) Unsubscribe(ticket string) error {
 	panic("implement me")
 }
 
-func (s storeMock) Length() uint {
+func (s storeMock) Length() int {
 	return s.MLength
 }
 
@@ -49,7 +49,7 @@ func TestDataFlowRegistry_FindStore(t *testing.T) {
 		DataPump:  &pumpMock{},
 	})
 	targetUid := "A12345"
-	var expectedStoreLength uint = 12
+	expectedStoreLength := 12
 	dfr.Add(&dataFlow{
 		UUID:      targetUid,
 		DataStore: &storeMock{MLength: expectedStoreLength},
