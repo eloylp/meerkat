@@ -22,12 +22,7 @@ func NewApp(cfg config.Config) *App {
 		dataStore := store.NewTimeLineStore(10)
 		fetcher := fetch.NewHTTPFetcher(&http.Client{})
 		dataPump := fetch.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
-		dfr.Add(&flow.DataFlow{
-			UUID:      unique.UUID4(),
-			Resource:  r,
-			DataStore: dataStore,
-			DataPump:  dataPump,
-		})
+		dfr.Add(flow.NewDataFlow(unique.UUID4(), r, dataStore, dataPump))
 	}
 
 	return &App{

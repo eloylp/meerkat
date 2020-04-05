@@ -14,7 +14,7 @@ func (s *server) handleHTMLClient() http.HandlerFunc {
 
 		var img string
 		for _, df := range s.dfr.DataFlows() {
-			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID)
+			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID())
 		}
 
 		doc := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, img)

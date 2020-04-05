@@ -9,19 +9,23 @@ type dataPump interface {
 }
 
 type DataFlow struct {
-	UUID      string
-	Resource  string
-	DataStore store.Store
-	DataPump  dataPump
+	uUID      string
+	resource  string
+	dataStore store.Store
+	dataPump  dataPump
 }
 
 func NewDataFlow(UUID string, resource string, dataStore store.Store, dataPump dataPump) *DataFlow {
-	return &DataFlow{UUID: UUID, Resource: resource, DataStore: dataStore, DataPump: dataPump}
+	return &DataFlow{uUID: UUID, resource: resource, dataStore: dataStore, dataPump: dataPump}
+}
+
+func (df *DataFlow) UUID() string {
+	return df.uUID
 }
 
 func (df *DataFlow) Store() store.Store {
-	return df.DataStore
+	return df.dataStore
 }
 func (df *DataFlow) Start() {
-	df.DataPump.Start()
+	df.dataPump.Start()
 }

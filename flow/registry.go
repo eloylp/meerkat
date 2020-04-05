@@ -24,8 +24,8 @@ func (dfr *DataFlowRegistry) Add(df *DataFlow) {
 
 func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
 	for _, wf := range dfr.DataFlows() {
-		if wf.UUID == wfUid {
-			return wf.DataStore, nil
+		if wf.UUID() == wfUid {
+			return wf.dataStore, nil
 		}
 	}
 	return nil, errors.New(fmt.Sprintf("Cannot find workflow %v", wfUid))
