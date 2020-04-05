@@ -6,11 +6,12 @@ import (
 	"github.com/eloylp/meerkat/flow"
 	"github.com/eloylp/meerkat/store"
 	"github.com/eloylp/meerkat/unique"
+	"github.com/eloylp/meerkat/www"
 	"net/http"
 )
 
 type App struct {
-	httpServer       *server
+	httpServer       *www.HTTPServer
 	dataFlowRegistry *flow.DataFlowRegistry
 }
 
@@ -26,7 +27,7 @@ func NewApp(cfg config.Config) *App {
 	}
 
 	return &App{
-		httpServer:       newHTTPServer(cfg.HTTPListenAddress, dfr),
+		httpServer:       www.NewHTTPServer(cfg.HTTPListenAddress, dfr),
 		dataFlowRegistry: dfr,
 	}
 }

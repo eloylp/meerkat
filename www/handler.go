@@ -1,19 +1,20 @@
-package factory
+package www
 
 import (
 	"fmt"
+	"github.com/eloylp/meerkat/flow"
 	"github.com/eloylp/meerkat/writer"
 	"log"
 	"net/http"
 	"strings"
 )
 
-func (s *server) handleHTMLClient() http.HandlerFunc {
+func HandleHTMLClient(dfr *flow.DataFlowRegistry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/h")
 
 		var img string
-		for _, df := range s.dfr.DataFlows() {
+		for _, df := range dfr.DataFlows() {
 			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID())
 		}
 
@@ -22,13 +23,13 @@ func (s *server) handleHTMLClient() http.HandlerFunc {
 	}
 }
 
-func (s *server) handleMJPEG() http.HandlerFunc {
+func HandleMJPEG(dfr *flow.DataFlowRegistry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mJPEGWriter := writer.NewMJPEGWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mJPEGWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
 		dataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
-		store, err := s.dfr.FindStore(dataFlowUUID)
+		store, err := dfr.FindStore(dataFlowUUID)
 		if err != nil {
 			log.Fatal(err)
 		}
