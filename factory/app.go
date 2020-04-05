@@ -1,43 +1,44 @@
 package factory
 
 import (
+	httpserver "github.com/eloylp/go-serve/www"
 	"github.com/eloylp/meerkat/config"
-	"github.com/eloylp/meerkat/fetch"
 	"github.com/eloylp/meerkat/flow"
-	"github.com/eloylp/meerkat/store"
-	"github.com/eloylp/meerkat/unique"
 	"github.com/eloylp/meerkat/www"
 	"net/http"
+	"time"
 )
 
-type App struct {
-	httpServer       *www.HTTPServer
+type HTTPServedApp struct {
+	httpServer       *http.Server
 	dataFlowRegistry *flow.DataFlowRegistry
 }
 
-func NewApp(cfg config.Config) *App {
-
-	dfr := &flow.DataFlowRegistry{}
-
-	for _, r := range cfg.Resources {
-		dataStore := store.NewTimeLineStore(10)
-		fetcher := fetch.NewHTTPFetcher(&http.Client{})
-		dataPump := fetch.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
-		dfr.Add(flow.NewDataFlow(unique.UUID4(), r, dataStore, dataPump))
-	}
-
-	return &App{
-		httpServer:       www.NewHTTPServer(cfg.HTTPListenAddress, dfr),
-		dataFlowRegistry: dfr,
-	}
-}
-
-func (a *App) Start() error {
+func (a *HTTPServedApp) Start() error {
 	for _, dataFlow := range a.dataFlowRegistry.DataFlows() {
 		go dataFlow.Start()
 	}
-	if err := a.httpServer.Start(); err != nil {
+	httpserver.Shutdown(a.httpServer, 20*time.Second)
+	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
 	}
 	return nil
+}
+
+func NewHTTPServedApp(cfg config.Config) (*HTTPServedApp, error) {
+	dfr, err := NewDataFlowRegistry(cfg)
+	if err != nil {
+		return nil, err
+	}
+	h := http.NewServeMux()
+	h.HandleFunc(www.DashboardPath, www.HandleHTMLClient(dfr))
+	h.HandleFunc(www.DataStreamPath, www.HandleMJPEG(dfr))
+	s := &http.Server{
+		Addr:    cfg.HTTPListenAddress,
+		Handler: h,
+	}
+	return &HTTPServedApp{
+		httpServer:       s,
+		dataFlowRegistry: dfr,
+	}, nil
 }
