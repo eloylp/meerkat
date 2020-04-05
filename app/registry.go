@@ -10,19 +10,23 @@ type dataPump interface {
 	Start()
 }
 
-type dataFlowRegistry struct {
-	Flows []*dataFlow
+type DataFlowRegistry struct {
+	flows []*DataFlow
 }
 
-func (dfr *dataFlowRegistry) DataFlows() []*dataFlow {
-	return dfr.Flows
+func NewDataFlowRegistry(flows []*DataFlow) *DataFlowRegistry {
+	return &DataFlowRegistry{flows: flows}
 }
 
-func (dfr *dataFlowRegistry) Add(df *dataFlow) {
-	dfr.Flows = append(dfr.Flows, df)
+func (dfr *DataFlowRegistry) DataFlows() []*DataFlow {
+	return dfr.flows
 }
 
-func (dfr *dataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
+func (dfr *DataFlowRegistry) Add(df *DataFlow) {
+	dfr.flows = append(dfr.flows, df)
+}
+
+func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
 	for _, wf := range dfr.DataFlows() {
 		if wf.UUID == wfUid {
 			return wf.DataStore, nil
@@ -31,16 +35,20 @@ func (dfr *dataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
 	return nil, errors.New(fmt.Sprintf("Cannot find workflow %v", wfUid))
 }
 
-type dataFlow struct {
+type DataFlow struct {
 	UUID      string
 	Resource  string
 	DataStore store.Store
 	DataPump  dataPump
 }
 
-func (df *dataFlow) Store() store.Store {
+func NewDataFlow(UUID string, resource string, dataStore store.Store, dataPump dataPump) *DataFlow {
+	return &DataFlow{UUID: UUID, Resource: resource, DataStore: dataStore, DataPump: dataPump}
+}
+
+func (df *DataFlow) Store() store.Store {
 	return df.DataStore
 }
-func (df *dataFlow) Start() {
+func (df *DataFlow) Start() {
 	df.DataPump.Start()
 }

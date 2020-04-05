@@ -9,10 +9,10 @@ const DashboardPath = "/"
 
 type server struct {
 	listenAddress string
-	dfr           *dataFlowRegistry
+	dfr           *DataFlowRegistry
 }
 
-func newHTTPServer(listenAddress string, dfr *dataFlowRegistry) *server {
+func newHTTPServer(listenAddress string, dfr *DataFlowRegistry) *server {
 	return &server{listenAddress: listenAddress, dfr: dfr}
 }
 

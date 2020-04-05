@@ -1,6 +1,7 @@
-package app
+package app_test
 
 import (
+	"github.com/eloylp/meerkat/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"io"
@@ -50,25 +51,12 @@ func (p *pumpMock) Start() {
 
 func TestDataFlowRegistry_FindStore(t *testing.T) {
 
-	dfr := &dataFlowRegistry{}
-	dfr.Add(&dataFlow{
-		UUID:      "A1234",
-		DataStore: &storeMock{},
-		DataPump:  &pumpMock{},
-	})
+	df1 := app.NewDataFlow("A1234", "", &storeMock{}, &pumpMock{})
 	targetUid := "A12345"
 	expectedStore := &storeMock{}
-	dfr.Add(&dataFlow{
-		UUID:      targetUid,
-		DataStore: expectedStore,
-		DataPump:  &pumpMock{},
-	})
-
-	dfr.Add(&dataFlow{
-		UUID:      "A123456",
-		DataStore: &storeMock{},
-		DataPump:  &pumpMock{},
-	})
+	df2 := app.NewDataFlow(targetUid, "", expectedStore, &pumpMock{})
+	df3 := app.NewDataFlow("A123456", "", &storeMock{}, &pumpMock{})
+	dfr := app.NewDataFlowRegistry([]*app.DataFlow{df1, df2, df3})
 	result, err := dfr.FindStore(targetUid)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedStore, result)

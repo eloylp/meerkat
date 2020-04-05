@@ -10,18 +10,18 @@ import (
 
 type App struct {
 	httpServer       *server
-	dataFlowRegistry *dataFlowRegistry
+	dataFlowRegistry *DataFlowRegistry
 }
 
 func NewApp(cfg config.Config) *App {
 
-	dfr := &dataFlowRegistry{}
+	dfr := &DataFlowRegistry{}
 
 	for _, r := range cfg.Resources {
 		dataStore := store.NewTimeLineStore(10)
 		fetcher := fetch.NewHTTPFetcher(&http.Client{})
 		dataPump := fetch.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
-		dfr.Add(&dataFlow{
+		dfr.Add(&DataFlow{
 			UUID:      unique.UUID4(),
 			Resource:  r,
 			DataStore: dataStore,
