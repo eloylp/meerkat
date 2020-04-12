@@ -11,7 +11,7 @@ var version string
 
 func main() {
 	fmt.Println(fmt.Sprintf("Meerkat %s", version))
-	cfg := config.C()
+	cfg := config.FromArguments()
 	d, err := factory.NewHTTPServedApp(cfg)
 	if err != nil {
 		log.Fatal(err)

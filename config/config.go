@@ -14,7 +14,7 @@ type Config struct {
 
 var validators []validator
 
-func C() Config {
+func FromArguments() Config {
 	cfg := Config{}
 	var resources string
 	flag.StringVar(&resources, "u", "", "The comma separated URLS to recover frames from")
