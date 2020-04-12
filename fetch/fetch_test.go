@@ -3,20 +3,18 @@ package fetch_test
 import (
 	"bytes"
 	"github.com/eloylp/meerkat/fetch"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
 )
 
 func TestHTTPFetcher_Fetch(t *testing.T) {
-
 	resUrl := "http://iesource.com/camera.jpg"
 	body := "OK"
 	client := NewTestClient(func(req *http.Request) *http.Response {
 		requestedUrl := req.URL.String()
-		if requestedUrl != resUrl {
-			t.Errorf("Expected camera url is %s but client used %s", resUrl, requestedUrl)
-		}
+		assert.Equal(t, resUrl, requestedUrl, "Expected camera url is %s but client used %s", resUrl, requestedUrl)
 		return &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(body)),
@@ -26,16 +24,8 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 	fetcher := fetch.NewHTTPFetcher(client)
 	reader, err := fetcher.Fetch(resUrl)
 	d, err := ioutil.ReadAll(reader)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if err != nil {
-		t.Error(err)
-	}
-	if string(d) != body {
-		t.Errorf("Expected body is %v got %v", body, reader)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, body, string(d), "Expected body is %v got %v", body, reader)
 }
 
 func NewTestClient(fn RoundTripFunc) *http.Client {
