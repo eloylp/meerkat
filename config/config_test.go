@@ -29,8 +29,10 @@ func Test_parseResources(t *testing.T) {
 	}
 
 	for _, c := range s {
-		result := parseResources(c.Input)
-		assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v",
-			c.Description, c.Expected, result)
+		t.Run(c.Description, func(t *testing.T) {
+			result := parseResources(c.Input)
+			assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v",
+				c.Description, c.Expected, result)
+		})
 	}
 }
