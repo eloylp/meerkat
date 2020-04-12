@@ -1,19 +1,16 @@
 package config
 
 import (
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_parseResources(t *testing.T) {
-
-	type sample struct {
+	s := []struct {
 		Input       string
 		Expected    []string
 		Description string
-	}
-
-	s := []sample{
+	}{
 		{
 			Input:       "http://example.com/image.jpg",
 			Expected:    []string{"http://example.com/image.jpg"},
@@ -33,8 +30,7 @@ func Test_parseResources(t *testing.T) {
 
 	for _, c := range s {
 		result := parseResources(c.Input)
-		if !reflect.DeepEqual(result, c.Expected) {
-			t.Errorf("Cannot ensure case '%s', expected output is %v but got %v", c.Description, c.Expected, result)
-		}
+		assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v",
+			c.Description, c.Expected, result)
 	}
 }
