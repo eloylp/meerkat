@@ -2,30 +2,16 @@ package config_test
 
 import (
 	"github.com/eloylp/meerkat/config"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-type sample struct {
-	config      config.Config
-	mustPass    bool
-	description string
-}
-
 func TestValidate(t *testing.T) {
-	cases := validateCases()
-	for _, c := range cases {
-		err := config.Validate(c.config)
-		if c.mustPass && err != nil {
-			t.Errorf("Pass expectation: %s", c.description)
-		}
-		if !c.mustPass && err == nil {
-			t.Errorf("Fail expectation: %s", c.description)
-		}
-	}
-}
-
-func validateCases() []sample {
-	return []sample{
+	cases := []struct {
+		config      config.Config
+		mustPass    bool
+		description string
+	}{
 		{config: config.Config{
 			PollInterval:      1,
 			Resources:         []string{"http://example.com/camdump.jpeg"},
@@ -66,5 +52,15 @@ func validateCases() []sample {
 			mustPass:    false,
 			description: "Must not accept a config with no http listen address setting",
 		},
+	}
+	for _, c := range cases {
+		t.Run(c.description, func(t *testing.T) {
+			err := config.Validate(c.config)
+			if c.mustPass {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
+		})
 	}
 }
