@@ -1,7 +1,7 @@
 package fetch
 
 import (
-	"github.com/eloylp/meerkat/store"
+	"github.com/eloylp/meerkat/elements"
 	"io"
 	"log"
 	"time"
@@ -15,10 +15,10 @@ type dataPump struct {
 	interval int
 	url      string
 	fetcher  fetcher
-	store    store.Store
+	store    elements.Store
 }
 
-func NewDataPump(interval int, url string, fetcher fetcher, store store.Store) *dataPump {
+func NewDataPump(interval int, url string, fetcher fetcher, store elements.Store) *dataPump {
 	return &dataPump{interval: interval, url: url, fetcher: fetcher, store: store}
 }
 

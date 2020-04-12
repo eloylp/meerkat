@@ -1,21 +1,17 @@
 package flow
 
 import (
-	"github.com/eloylp/meerkat/store"
+	"github.com/eloylp/meerkat/elements"
 )
-
-type dataPump interface {
-	Start()
-}
 
 type DataFlow struct {
 	uUID      string
 	resource  string
-	dataStore store.Store
-	dataPump  dataPump
+	dataStore elements.Store
+	dataPump  elements.DataPump
 }
 
-func NewDataFlow(UUID string, resource string, dataStore store.Store, dataPump dataPump) *DataFlow {
+func NewDataFlow(UUID string, resource string, dataStore elements.Store, dataPump elements.DataPump) *DataFlow {
 	return &DataFlow{uUID: UUID, resource: resource, dataStore: dataStore, dataPump: dataPump}
 }
 
@@ -23,7 +19,7 @@ func (df *DataFlow) UUID() string {
 	return df.uUID
 }
 
-func (df *DataFlow) Store() store.Store {
+func (df *DataFlow) Store() elements.Store {
 	return df.dataStore
 }
 func (df *DataFlow) Start() {

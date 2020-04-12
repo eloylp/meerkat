@@ -3,7 +3,7 @@ package flow
 import (
 	"errors"
 	"fmt"
-	"github.com/eloylp/meerkat/store"
+	"github.com/eloylp/meerkat/elements"
 )
 
 type DataFlowRegistry struct {
@@ -22,7 +22,7 @@ func (dfr *DataFlowRegistry) Add(df *DataFlow) {
 	dfr.flows = append(dfr.flows, df)
 }
 
-func (dfr *DataFlowRegistry) FindStore(wfUid string) (store.Store, error) {
+func (dfr *DataFlowRegistry) FindStore(wfUid string) (elements.Store, error) {
 	for _, wf := range dfr.DataFlows() {
 		if wf.UUID() == wfUid {
 			return wf.dataStore, nil

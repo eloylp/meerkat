@@ -10,15 +10,6 @@ import (
 	"time"
 )
 
-type Store interface {
-	AddItem(r io.Reader) error
-	Subscribe() (chan io.Reader, string)
-	Subscribers() int
-	Unsubscribe(uuid string) error
-	Length() int
-	Reset()
-}
-
 type subscriber struct {
 	ch   chan io.Reader
 	UUID string
