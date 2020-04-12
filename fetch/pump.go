@@ -2,9 +2,14 @@ package fetch
 
 import (
 	"github.com/eloylp/meerkat/store"
+	"io"
 	"log"
 	"time"
 )
+
+type fetcher interface {
+	Fetch(res string) (io.Reader, error)
+}
 
 type dataPump struct {
 	interval int

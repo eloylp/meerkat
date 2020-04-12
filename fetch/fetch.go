@@ -7,10 +7,6 @@ import (
 	"net/http"
 )
 
-type fetcher interface {
-	Fetch(res string) (io.Reader, error)
-}
-
 type hTTPFetcher struct {
 	client *http.Client
 }
