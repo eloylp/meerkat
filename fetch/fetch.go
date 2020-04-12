@@ -20,7 +20,6 @@ func (f *hTTPFetcher) Fetch(res string) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO , investigate if is needed to read the entire body to close it.
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
