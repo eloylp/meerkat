@@ -12,8 +12,6 @@ type Config struct {
 	HTTPListenAddress string
 }
 
-var validators []validator
-
 func FromArguments() Config {
 	cfg := Config{}
 	var resources string

@@ -5,12 +5,10 @@ import (
 	"fmt"
 )
 
-func init() {
-	validators = []validator{
-		&ResourceValidator{},
-		&PollIntervalValidator{},
-		&HTTPListenAddressValidator{},
-	}
+var validators = []validator{
+	&ResourceValidator{},
+	&PollIntervalValidator{},
+	&HTTPListenAddressValidator{},
 }
 
 type validator interface {
