@@ -165,7 +165,7 @@ loop:
 		case <-timer.C:
 			break loop
 		default:
-			go s.AddItem(bytes.NewReader([]byte("d")))
+			go s.AddItem(bytes.NewReader([]byte("d"))) //nolint:errcheck
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package flow
 
 import (
-	"errors"
 	"fmt"
 	"github.com/eloylp/meerkat/elements"
 )
@@ -28,5 +27,5 @@ func (dfr *DataFlowRegistry) FindStore(wfUid string) (elements.Store, error) {
 			return wf.dataStore, nil
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("Cannot find workflow %v", wfUid))
+	return nil, fmt.Errorf("cannot find worklow %v", wfUid)
 }

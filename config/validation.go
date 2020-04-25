@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -41,14 +40,14 @@ func (HTTPListenAddressValidator) validate(c Config) error {
 
 func stringNotZero(k string, v string) error {
 	if v == "" {
-		return errors.New(fmt.Sprintf("%s cannot be empty", k))
+		return fmt.Errorf("%s cannot be empty", k)
 	}
 	return nil
 }
 
 func notZero(k string, v int) error {
 	if v == 0 {
-		return errors.New(fmt.Sprintf("%s cannot be empty", k))
+		return fmt.Errorf("%s cannot be empty", k)
 	}
 	return nil
 }

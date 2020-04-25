@@ -10,7 +10,7 @@ import (
 var version string
 
 func main() {
-	fmt.Println(fmt.Sprintf("Meerkat %s", version))
+	fmt.Printf("Meerkat %s \n", version)
 	cfg := config.FromArguments()
 	d, err := factory.NewHTTPServedApp(cfg)
 	if err != nil {

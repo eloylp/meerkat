@@ -23,6 +23,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 	})
 	fetcher := fetch.NewHTTPFetcher(client)
 	reader, err := fetcher.Fetch(resUrl)
+	assert.NoError(t, err)
 	d, err := ioutil.ReadAll(reader)
 	assert.NoError(t, err)
 	assert.Equal(t, body, string(d), "Expected body is %v got %v", body, reader)
@@ -30,7 +31,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
-		Transport: RoundTripFunc(fn),
+		Transport: fn,
 	}
 }
 

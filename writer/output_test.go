@@ -27,7 +27,7 @@ func TestNewMJPEGDumper(t *testing.T) {
 		t.Error(err)
 	}
 	expectedPart := "--" + d.Boundary() + " Content-Type: image/jpeg  Data"
-	writePartString := string(w.Bytes())
+	writePartString := w.String()
 	re := regexp.MustCompile(`\r?\n`)
 	writePartSanitized := re.ReplaceAllString(writePartString, " ")
 	if writePartSanitized != expectedPart {
