@@ -1,3 +1,5 @@
+// +build unit
+
 package writer_test
 
 import (

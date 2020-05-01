@@ -7,10 +7,16 @@ import (
 	"log"
 )
 
-var version string
+var (
+	Name      = "meerkat"
+	Version   = "vx.y.z"
+	Build     = "a1234"
+	BuildTime = "a1234"
+)
 
 func main() {
-	fmt.Printf("Meerkat %s \n", version)
+
+	fmt.Printf("%s %s - Build: %s at %s \n", Name, Version, Build, BuildTime)
 	cfg := config.FromArguments()
 	d, err := factory.NewHTTPServedApp(cfg)
 	if err != nil {

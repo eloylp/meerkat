@@ -1,3 +1,5 @@
+// +build unit
+
 package flow_test
 
 import (
