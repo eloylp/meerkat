@@ -12,18 +12,18 @@ type fetcher interface {
 	Fetch(res string) (io.Reader, error)
 }
 
-type dataPump struct {
+type DataPump struct {
 	interval int
 	url      string
 	fetcher  fetcher
 	store    elements.Store
 }
 
-func NewDataPump(interval int, url string, fetcher fetcher, store elements.Store) *dataPump {
-	return &dataPump{interval: interval, url: url, fetcher: fetcher, store: store}
+func NewDataPump(interval int, url string, fetcher fetcher, store elements.Store) *DataPump {
+	return &DataPump{interval: interval, url: url, fetcher: fetcher, store: store}
 }
 
-func (dp *dataPump) Start() {
+func (dp *DataPump) Start() {
 	for {
 		time.Sleep(time.Duration(dp.interval) * time.Second)
 		reader, err := dp.fetcher.Fetch(dp.url)

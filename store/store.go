@@ -22,7 +22,7 @@ type dataFrame struct {
 	data      []byte
 }
 
-type timeLineStore struct {
+type TimeLineStore struct {
 	items              []*dataFrame
 	subscribers        []subscriber
 	maxItems           int
@@ -30,23 +30,23 @@ type timeLineStore struct {
 	L                  sync.RWMutex
 }
 
-func (t *timeLineStore) Length() int {
+func (t *TimeLineStore) Length() int {
 	t.L.RLock()
 	defer t.L.RUnlock()
 	return len(t.items)
 }
 
-func (t *timeLineStore) Subscribers() int {
+func (t *TimeLineStore) Subscribers() int {
 	t.L.RLock()
 	defer t.L.RUnlock()
 	return len(t.subscribers)
 }
 
-func NewTimeLineStore(maxItems int) *timeLineStore {
-	return &timeLineStore{maxItems: maxItems, subscriberBuffSize: 10}
+func NewTimeLineStore(maxItems int) *TimeLineStore {
+	return &TimeLineStore{maxItems: maxItems, subscriberBuffSize: 10}
 }
 
-func (t *timeLineStore) AddItem(r io.Reader) error {
+func (t *TimeLineStore) AddItem(r io.Reader) error {
 	t.L.Lock()
 	defer t.L.Unlock()
 	data, err := ioutil.ReadAll(r)
@@ -65,11 +65,11 @@ func (t *timeLineStore) AddItem(r io.Reader) error {
 	return nil
 }
 
-func (t *timeLineStore) store(frame *dataFrame) {
+func (t *TimeLineStore) store(frame *dataFrame) {
 	t.items = append(t.items, frame)
 }
 
-func (t *timeLineStore) gcItems() {
+func (t *TimeLineStore) gcItems() {
 	l := len(t.items)
 	if l > t.maxItems {
 		i := make([]*dataFrame, t.maxItems)
@@ -79,13 +79,13 @@ func (t *timeLineStore) gcItems() {
 	}
 }
 
-func (t *timeLineStore) publish(df *dataFrame) {
+func (t *TimeLineStore) publish(df *dataFrame) {
 	for _, s := range t.subscribers {
 		s.ch <- bytes.NewReader(df.data)
 	}
 }
 
-func (t *timeLineStore) Subscribe() (chan io.Reader, string) {
+func (t *TimeLineStore) Subscribe() (chan io.Reader, string) {
 	t.L.Lock()
 	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscriberBuffSize)
@@ -99,7 +99,7 @@ func (t *timeLineStore) Subscribe() (chan io.Reader, string) {
 	return ch, uuid
 }
 
-func (t *timeLineStore) Unsubscribe(uuid string) error {
+func (t *TimeLineStore) Unsubscribe(uuid string) error {
 	if !t.exists(uuid) {
 		return newNotFoundError(uuid)
 	}
@@ -119,7 +119,7 @@ func (t *timeLineStore) Unsubscribe(uuid string) error {
 	return nil
 }
 
-func (t *timeLineStore) exists(uuid string) bool {
+func (t *TimeLineStore) exists(uuid string) bool {
 	t.L.RLock()
 	defer t.L.RUnlock()
 	for _, s := range t.subscribers {
@@ -130,7 +130,7 @@ func (t *timeLineStore) exists(uuid string) bool {
 	return false
 }
 
-func (t *timeLineStore) estimateCapacity() int {
+func (t *TimeLineStore) estimateCapacity() int {
 	cl := len(t.subscribers)
 	ec := 0
 	if cl > 0 {
@@ -139,7 +139,7 @@ func (t *timeLineStore) estimateCapacity() int {
 	return ec
 }
 
-func (t *timeLineStore) Reset() {
+func (t *TimeLineStore) Reset() {
 	t.L.Lock()
 	defer t.L.Unlock()
 	for _, s := range t.subscribers {

@@ -20,7 +20,8 @@ func (a *HTTPServedApp) Start() error {
 	for _, dataFlow := range a.dataFlowRegistry.DataFlows() {
 		go dataFlow.Start()
 	}
-	httpserver.Shutdown(a.httpServer, 20*time.Second)
+	shutDownTimeout := 20 * time.Second
+	httpserver.Shutdown(a.httpServer, shutDownTimeout)
 	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
 	}

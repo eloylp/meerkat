@@ -81,7 +81,6 @@ func TestTimeLineStore_Reset(t *testing.T) {
 	}
 }
 func TestTimeLineStore(t *testing.T) {
-
 	s := populatedTimeLineStore(t)
 	listenCh, _ := s.Subscribe()
 
@@ -107,7 +106,7 @@ func TestTimeLineStore(t *testing.T) {
 	}
 }
 
-func populatedTimeLineStore(t *testing.T) *timeLineStore {
+func populatedTimeLineStore(t *testing.T) *TimeLineStore {
 	samples := []io.Reader{
 		bytes.NewReader([]byte("d1")),
 		bytes.NewReader([]byte("d2")),
@@ -123,7 +122,6 @@ func populatedTimeLineStore(t *testing.T) *timeLineStore {
 }
 
 func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
-
 	s := populatedTimeLineStore(t)
 	subs, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
@@ -151,7 +149,6 @@ func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 }
 
 func TestNewTimeLineStore_DataRace(t *testing.T) {
-
 	s := populatedTimeLineStore(t)
 	subs, _ := s.Subscribe()
 

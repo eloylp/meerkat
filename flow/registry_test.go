@@ -19,7 +19,7 @@ func (s *storeMock) AddItem(r io.Reader) error {
 	return args.Error(0)
 }
 
-func (s *storeMock) Subscribe() (chan io.Reader, string) {
+func (s *storeMock) Subscribe() (chan io.Reader, string) { //nolint:gocritic
 	args := s.Called()
 	return args.Get(0).(chan io.Reader), args.String(1)
 }
@@ -52,14 +52,13 @@ func (p *pumpMock) Start() {
 }
 
 func TestDataFlowRegistry_FindStore(t *testing.T) {
-
 	df1 := flow.NewDataFlow("A1234", "", &storeMock{}, &pumpMock{})
-	targetUid := "A12345"
+	targetUID := "A12345"
 	expectedStore := &storeMock{}
-	df2 := flow.NewDataFlow(targetUid, "", expectedStore, &pumpMock{})
+	df2 := flow.NewDataFlow(targetUID, "", expectedStore, &pumpMock{})
 	df3 := flow.NewDataFlow("A123456", "", &storeMock{}, &pumpMock{})
 	dfr := flow.NewDataFlowRegistry([]*flow.DataFlow{df1, df2, df3})
-	result, err := dfr.FindStore(targetUid)
+	result, err := dfr.FindStore(targetUID)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedStore, result)
 }

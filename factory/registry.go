@@ -13,7 +13,8 @@ import (
 func NewDataFlowRegistry(cfg config.Config) (*flow.DataFlowRegistry, error) {
 	dfr := &flow.DataFlowRegistry{}
 	for _, r := range cfg.Resources {
-		dataStore := store.NewTimeLineStore(10)
+		maxItems := 10
+		dataStore := store.NewTimeLineStore(maxItems)
 		fetcher := fetch.NewHTTPFetcher(&http.Client{})
 		dataPump := fetch.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
 		dfr.Add(flow.NewDataFlow(unique.UUID4(), r, dataStore, dataPump))

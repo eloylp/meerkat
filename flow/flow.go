@@ -11,8 +11,8 @@ type DataFlow struct {
 	dataPump  elements.DataPump
 }
 
-func NewDataFlow(UUID string, resource string, dataStore elements.Store, dataPump elements.DataPump) *DataFlow {
-	return &DataFlow{uUID: UUID, resource: resource, dataStore: dataStore, dataPump: dataPump}
+func NewDataFlow(uuid string, resource string, dataStore elements.Store, dataPump elements.DataPump) *DataFlow {
+	return &DataFlow{uUID: uuid, resource: resource, dataStore: dataStore, dataPump: dataPump}
 }
 
 func (df *DataFlow) UUID() string {

@@ -7,15 +7,15 @@ import (
 	"net/http"
 )
 
-type hTTPFetcher struct {
+type HTTPFetcher struct {
 	client *http.Client
 }
 
-func NewHTTPFetcher(client *http.Client) *hTTPFetcher {
-	return &hTTPFetcher{client: client}
+func NewHTTPFetcher(client *http.Client) *HTTPFetcher {
+	return &HTTPFetcher{client: client}
 }
 
-func (f *hTTPFetcher) Fetch(res string) (io.Reader, error) {
+func (f *HTTPFetcher) Fetch(res string) (io.Reader, error) {
 	r, err := f.client.Get(res)
 	if err != nil {
 		return nil, err

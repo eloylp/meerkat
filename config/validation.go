@@ -37,7 +37,7 @@ func (HTTPListenAddressValidator) validate(c Config) error {
 	return stringNotZero("HTTP listen address", c.HTTPListenAddress)
 }
 
-func stringNotZero(k string, v string) error {
+func stringNotZero(k, v string) error {
 	if v == "" {
 		return fmt.Errorf("%s cannot be empty", k)
 	}

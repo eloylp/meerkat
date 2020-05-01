@@ -22,11 +22,11 @@ func (dfr *DataFlowRegistry) Add(df *DataFlow) {
 	dfr.flows = append(dfr.flows, df)
 }
 
-func (dfr *DataFlowRegistry) FindStore(wfUid string) (elements.Store, error) {
+func (dfr *DataFlowRegistry) FindStore(wfUID string) (elements.Store, error) {
 	for _, wf := range dfr.DataFlows() {
-		if wf.UUID() == wfUid {
+		if wf.UUID() == wfUID {
 			return wf.dataStore, nil
 		}
 	}
-	return nil, fmt.Errorf("cannot find worklow %v", wfUid)
+	return nil, fmt.Errorf("cannot find worklow %v", wfUID)
 }
