@@ -21,7 +21,6 @@ func (ResourceValidator) validate(c Config) error {
 		if err := stringNotZero("Resource", r); err != nil {
 			return err
 		}
-
 	}
 	return nil
 }

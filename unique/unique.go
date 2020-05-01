@@ -1,8 +1,9 @@
 package unique
 
 import (
-	"github.com/google/uuid"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 func UUID4() string {

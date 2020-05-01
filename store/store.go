@@ -2,12 +2,13 @@ package store
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/unique"
 	"io"
 	"io/ioutil"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/eloylp/meerkat/unique"
 )
 
 type subscriber struct {

@@ -1,10 +1,11 @@
 package fetch
 
 import (
-	"github.com/eloylp/meerkat/elements"
 	"io"
 	"log"
 	"time"
+
+	"github.com/eloylp/meerkat/elements"
 )
 
 type fetcher interface {

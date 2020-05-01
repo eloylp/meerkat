@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/eloylp/meerkat/config"
 	"github.com/eloylp/meerkat/factory"
-	"log"
 )
 
 var (
@@ -15,7 +16,6 @@ var (
 )
 
 func main() {
-
 	fmt.Printf("%s %s - Build: %s at %s \n", Name, Version, Build, BuildTime)
 	cfg := config.FromArguments()
 	d, err := factory.NewHTTPServedApp(cfg)

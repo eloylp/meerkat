@@ -2,6 +2,7 @@ package flow
 
 import (
 	"fmt"
+
 	"github.com/eloylp/meerkat/elements"
 )
 

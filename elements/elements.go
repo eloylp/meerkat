@@ -18,7 +18,7 @@ type DataPump interface {
 type Store interface {
 	// AddItem will add to the store a chunk of data
 	AddItem(r io.Reader) error
-	// Subscribe will return an ouput channel that will be notified
+	// Subscribe will return an output channel that will be notified
 	// when more data arrives to store it will also return the associated UUID
 	// for later Unsubscribe operation.
 	//

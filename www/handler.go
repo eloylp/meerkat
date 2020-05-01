@@ -2,11 +2,12 @@ package www
 
 import (
 	"fmt"
-	"github.com/eloylp/meerkat/flow"
-	"github.com/eloylp/meerkat/writer"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/eloylp/meerkat/flow"
+	"github.com/eloylp/meerkat/writer"
 )
 
 func HandleHTMLClient(dfr *flow.DataFlowRegistry) http.HandlerFunc {
