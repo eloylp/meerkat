@@ -1,32 +1,10 @@
 package factory
 
 import (
-	"net/http"
-	"time"
-
-	httpserver "github.com/eloylp/go-serve/www"
-
 	"github.com/eloylp/meerkat/config"
-	"github.com/eloylp/meerkat/flow"
 	"github.com/eloylp/meerkat/www"
+	"net/http"
 )
-
-type HTTPServedApp struct {
-	httpServer       *http.Server
-	dataFlowRegistry *flow.DataFlowRegistry
-}
-
-func (a *HTTPServedApp) Start() error {
-	for _, dataFlow := range a.dataFlowRegistry.DataFlows() {
-		go dataFlow.Start()
-	}
-	shutDownTimeout := 20 * time.Second
-	httpserver.Shutdown(a.httpServer, shutDownTimeout)
-	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
-		return err
-	}
-	return nil
-}
 
 func NewHTTPServedApp(cfg config.Config) (*HTTPServedApp, error) {
 	dfr, err := NewDataFlowRegistry(cfg)
