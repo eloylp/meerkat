@@ -1,6 +1,6 @@
 module github.com/eloylp/meerkat
 
-go 1.13
+go 1.14
 
 require (
 	github.com/eloylp/go-serve v1.3.0
