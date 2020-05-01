@@ -1,4 +1,4 @@
-// Package elements represents all the moivng parts of this project.
+// Package elements represents all the moving parts of this project.
 // They are intended to be used in multiple packages so they are all
 // grouped here.
 package elements
