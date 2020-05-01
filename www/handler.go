@@ -2,20 +2,20 @@ package www
 
 import (
 	"fmt"
+	"github.com/eloylp/meerkat/data"
 	"log"
 	"net/http"
 	"strings"
 
-	"github.com/eloylp/meerkat/flow"
 	"github.com/eloylp/meerkat/writer"
 )
 
-func HandleHTMLClient(dfr *flow.DataFlowRegistry) http.HandlerFunc {
+func HandleHTMLClient(dfr *data.FlowRegistry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Content-type", "text/h")
 
 		var img string
-		for _, df := range dfr.DataFlows() {
+		for _, df := range dfr.Flows() {
 			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID())
 		}
 
@@ -24,7 +24,7 @@ func HandleHTMLClient(dfr *flow.DataFlowRegistry) http.HandlerFunc {
 	}
 }
 
-func HandleMJPEG(dfr *flow.DataFlowRegistry) http.HandlerFunc {
+func HandleMJPEG(dfr *data.FlowRegistry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mJPEGWriter := writer.NewMJPEGWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mJPEGWriter.Boundary())

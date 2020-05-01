@@ -1,10 +1,10 @@
 // +build unit
 
-package fetch_test
+package data_test
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/fetch"
+	"github.com/eloylp/meerkat/data"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -23,7 +23,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 			Header:     make(http.Header),
 		}
 	})
-	fetcher := fetch.NewHTTPFetcher(client)
+	fetcher := data.NewHTTPFetcher(client)
 	reader, err := fetcher.Fetch(resUrl)
 	assert.NoError(t, err)
 	d, err := ioutil.ReadAll(reader)

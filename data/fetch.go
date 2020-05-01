@@ -1,4 +1,4 @@
-package fetch
+package data
 
 import (
 	"bytes"
@@ -7,15 +7,15 @@ import (
 	"net/http"
 )
 
-type HTTPFetcher struct {
+type Fetcher struct {
 	client *http.Client
 }
 
-func NewHTTPFetcher(client *http.Client) *HTTPFetcher {
-	return &HTTPFetcher{client: client}
+func NewHTTPFetcher(client *http.Client) *Fetcher {
+	return &Fetcher{client: client}
 }
 
-func (f *HTTPFetcher) Fetch(res string) (io.Reader, error) {
+func (f *Fetcher) Fetch(res string) (io.Reader, error) {
 	r, err := f.client.Get(res)
 	if err != nil {
 		return nil, err
