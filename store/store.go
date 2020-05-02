@@ -85,7 +85,7 @@ func (t *BufferedStore) publish(df *dataFrame) {
 	}
 }
 
-func (t *BufferedStore) Subscribe() (chan io.Reader, string) {
+func (t *BufferedStore) Subscribe() (<-chan io.Reader, string) {
 	t.L.Lock()
 	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscriberBuffSize)

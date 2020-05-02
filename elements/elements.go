@@ -24,7 +24,7 @@ type Store interface {
 	//
 	// Depending on the implementation it will dump to the returned channel
 	// the entire available data layer until the last frame is reached.
-	Subscribe() (chan io.Reader, string)
+	Subscribe() (<-chan io.Reader, string)
 	// Subscribers will return the current number of active subscribers
 	Subscribers() int
 	// Unsubscribe will require the UUID obtained via a Subscribe operation to

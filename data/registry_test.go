@@ -19,7 +19,7 @@ func (s *storeMock) AddItem(r io.Reader) error {
 	return args.Error(0)
 }
 
-func (s *storeMock) Subscribe() (chan io.Reader, string) { //nolint:gocritic
+func (s *storeMock) Subscribe() (<-chan io.Reader, string) { //nolint:gocritic
 	args := s.Called()
 	return args.Get(0).(chan io.Reader), args.String(1)
 }

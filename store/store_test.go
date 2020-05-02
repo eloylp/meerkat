@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/eloylp/meerkat/store"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"testing"
@@ -13,10 +14,11 @@ import (
 
 func TestBufferedStore_Subscribe(t *testing.T) {
 	s := populatedBufferedStore(t)
-	_, uuid := s.Subscribe()
-	if uuid == "" {
-		t.Errorf("Ticket number must be above 0, got %v", uuid)
-	}
+	ch, uuid := s.Subscribe()
+	assert.NotEmpty(t, uuid, "want a uuid not an empty string")
+	assert.NotNil(t, ch, "want a channel")
+	_, ok := <-ch
+	assert.True(t, ok, "want a open channel")
 }
 
 func TestBufferedStore_Unsubscribe(t *testing.T) {
