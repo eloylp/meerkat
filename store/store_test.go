@@ -1,14 +1,14 @@
 // +build unit
 
-package store
+package store_test
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/eloylp/meerkat/store"
 	"io"
 	"io/ioutil"
 	"testing"
-	"time"
 )
 
 func TestTimeLineStore_Subscribe(t *testing.T) {
@@ -49,7 +49,7 @@ func TestTimeLineStore_Unsubscribe_NotFound(t *testing.T) {
 	}
 	err := s.Unsubscribe(uuid)
 	switch err.(type) {
-	case *NotFoundError:
+	case *store.NotFoundError:
 		break
 	default:
 		t.Errorf("Expected not found error but got %v", err)
@@ -106,21 +106,6 @@ func TestTimeLineStore(t *testing.T) {
 	}
 }
 
-func populatedTimeLineStore(t *testing.T) *TimeLineStore {
-	samples := []io.Reader{
-		bytes.NewReader([]byte("d1")),
-		bytes.NewReader([]byte("d2")),
-		bytes.NewReader([]byte("d3")),
-	}
-	s := NewTimeLineStore(3)
-	for _, sample := range samples {
-		if err := s.AddItem(sample); err != nil {
-			t.Fatal(err)
-		}
-	}
-	return s
-}
-
 func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 	s := populatedTimeLineStore(t)
 	subs, _ := s.Subscribe()
@@ -145,26 +130,5 @@ func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
 	expectedLastItem := "d4"
 	if lastItem != expectedLastItem {
 		t.Errorf("Expected last item is %s but got %s", expectedLastItem, lastItem)
-	}
-}
-
-func TestNewTimeLineStore_DataRace(t *testing.T) {
-	s := populatedTimeLineStore(t)
-	subs, _ := s.Subscribe()
-
-	go func() {
-		for {
-			<-subs
-		}
-	}()
-	timer := time.NewTimer(time.Second * 10)
-loop:
-	for {
-		select {
-		case <-timer.C:
-			break loop
-		default:
-			go s.AddItem(bytes.NewReader([]byte("d"))) //nolint:errcheck
-		}
 	}
 }
