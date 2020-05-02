@@ -58,32 +58,25 @@ func TestBufferedStore_Unsubscribe_notfound(t *testing.T) {
 }
 
 func TestBufferedStore_Reset(t *testing.T) {
-	items := 3
+	items := 0
 	maxItems := 3
 	maxSubsBuffSize := 10
 	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	ch, _ := s.Subscribe()
+	err := s.AddItem(bytes.NewReader([]byte("dd")))
+	assert.NoError(t, err)
+
 	s.Reset()
-	listenCh, _ := s.Subscribe()
-	if err := s.AddItem(bytes.NewReader([]byte("dd"))); err != nil {
-		t.Fatal(err)
-	}
-	s.Reset()
-	var count int
-	for item := range listenCh {
-		count++
-		item, err := ioutil.ReadAll(item)
-		if err != nil {
-			t.Fatal(err)
-		}
-		expected := "dd"
-		if expected != string(item) {
-			t.Fatalf("Expected nil values after reset")
-		}
-	}
-	if count != 1 {
-		t.Fatal("Only one element was expected in channel")
-	}
+
+	assert.Equal(t, 0, s.Subscribers(), "no subscribers expected after reset")
+	assert.Equal(t, 0, s.Length(), "no items expected after reset")
+	// Check channel is closed afer concumption
+	<-ch
+	_, ok := <-ch
+	assert.False(t, ok)
+
 }
+
 func TestBufferedStore(t *testing.T) {
 	items := 3
 	maxItems := 3
@@ -94,7 +87,6 @@ func TestBufferedStore(t *testing.T) {
 	s.Reset()
 	var dataCount int
 	var itemCount int
-	dataCount++
 	for item := range listenCh {
 		itemCount++
 		expected := "d" + fmt.Sprint(dataCount)

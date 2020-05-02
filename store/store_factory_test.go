@@ -14,7 +14,7 @@ import (
 // store.BufferedStore needed constructor args.
 func populatedBufferedStore(t *testing.T, items, maxitems, subscriberBuffSize int) *store.BufferedStore {
 	s := store.NewBufferedStore(maxitems, subscriberBuffSize)
-	for i := 0; i <= items; i++ {
+	for i := 0; i < items; i++ {
 		data := "d" + strconv.Itoa(i)
 		item := bytes.NewReader([]byte(data))
 		if err := s.AddItem(item); err != nil {
