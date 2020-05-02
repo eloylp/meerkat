@@ -5,19 +5,19 @@ package store_test
 import (
 	"bytes"
 	"github.com/eloylp/meerkat/store"
-	"io"
+	"strconv"
 	"testing"
 )
 
-func populatedBufferedStore(t *testing.T) *store.BufferedStore {
-	samples := []io.Reader{
-		bytes.NewReader([]byte("d1")),
-		bytes.NewReader([]byte("d2")),
-		bytes.NewReader([]byte("d3")),
-	}
-	s := store.NewBufferedStore(3)
-	for _, sample := range samples {
-		if err := s.AddItem(sample); err != nil {
+// populatedBufferedStore facilitates construction of an store
+// by accepting the number of items to be present and the max
+// items that will accept.
+func populatedBufferedStore(t *testing.T, items, maxitems int) *store.BufferedStore {
+	s := store.NewBufferedStore(maxitems)
+	for i := 0; i <= items; i++ {
+		data := "d" + strconv.Itoa(i)
+		item := bytes.NewReader([]byte(data))
+		if err := s.AddItem(item); err != nil {
 			t.Fatal(err)
 		}
 	}

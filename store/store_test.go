@@ -13,7 +13,9 @@ import (
 )
 
 func TestBufferedStore_Subscribe(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	ch, uuid := s.Subscribe()
 	assert.NotEmpty(t, uuid, "want a uuid not an empty string")
 	assert.NotNil(t, ch, "want a channel")
@@ -22,7 +24,9 @@ func TestBufferedStore_Subscribe(t *testing.T) {
 }
 
 func TestBufferedStore_Unsubscribe(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	// Adds one extra subscriber for test hardening.
 	_, _ = s.Subscribe()
 	ch, uuid := s.Subscribe()
@@ -43,7 +47,9 @@ func TestBufferedStore_Unsubscribe(t *testing.T) {
 }
 
 func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	_, uuid := s.Subscribe()
 	if err := s.Unsubscribe(uuid); err != nil {
 		t.Error(err)
@@ -58,7 +64,9 @@ func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
 }
 
 func TestBufferedStore_Reset(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	s.Reset()
 	listenCh, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("dd"))); err != nil {
@@ -82,7 +90,9 @@ func TestBufferedStore_Reset(t *testing.T) {
 	}
 }
 func TestBufferedStore(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	listenCh, _ := s.Subscribe()
 
 	s.Reset()
@@ -108,7 +118,9 @@ func TestBufferedStore(t *testing.T) {
 }
 
 func TestNewBufferedStore_OldItemsClear(t *testing.T) {
-	s := populatedBufferedStore(t)
+	items := 3
+	maxItems := 3
+	s := populatedBufferedStore(t, items, maxItems)
 	subs, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
 		t.Fatal(err)
