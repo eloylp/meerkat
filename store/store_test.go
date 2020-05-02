@@ -23,24 +23,23 @@ func TestBufferedStore_Subscribe(t *testing.T) {
 
 func TestBufferedStore_Unsubscribe(t *testing.T) {
 	s := populatedBufferedStore(t)
+	// Adds one extra subscriber for test hardening.
 	_, _ = s.Subscribe()
-	ch2, uuid2 := s.Subscribe()
-	if err := s.Unsubscribe(uuid2); err != nil {
-		t.Error(err)
-	}
+	ch, uuid := s.Subscribe()
+	err := s.Unsubscribe(uuid)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, s.Subscribers())
 
-	expectedSubscribers := 1
-	subscribersNumResult := s.Subscribers()
-	if subscribersNumResult != expectedSubscribers {
-		t.Errorf("Expected subscribers after unsubscribe is %v got %v", expectedSubscribers, subscribersNumResult)
-	}
+	// exaust channel
 	var count int
-	for range ch2 {
+	for range ch {
+		if count == 2 {
+			break
+		}
 		count++
 	}
-	if count != 3 {
-		t.Errorf("Exhausted channel must have last three elements, consumed %v", count)
-	}
+	_, ok := <-ch
+	assert.False(t, ok, "want channel closed after unsubscribe and consumed")
 }
 
 func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
