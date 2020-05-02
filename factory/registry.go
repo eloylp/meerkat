@@ -14,7 +14,7 @@ func NewDataFlowRegistry(cfg config.Config) (*data.FlowRegistry, error) {
 	dfr := &data.FlowRegistry{}
 	for _, r := range cfg.Resources {
 		maxItems := 10
-		dataStore := store.NewBufferedStore(maxItems)
+		dataStore := store.NewBufferedStore(maxItems, 10) // todo get from config ?
 		fetcher := data.NewHTTPFetcher(&http.Client{})
 		dataPump := data.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
 		dfr.Add(data.NewDataFlow(uuid.New().String(), r, dataStore, dataPump))

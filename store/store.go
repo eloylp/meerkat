@@ -42,8 +42,8 @@ func (t *BufferedStore) Subscribers() int {
 	return len(t.subscribers)
 }
 
-func NewBufferedStore(maxItems int) *BufferedStore {
-	return &BufferedStore{maxItems: maxItems, subscriberBuffSize: 10}
+func NewBufferedStore(maxItems, subscriberBuffSize int) *BufferedStore {
+	return &BufferedStore{maxItems: maxItems, subscriberBuffSize: subscriberBuffSize}
 }
 
 func (t *BufferedStore) AddItem(r io.Reader) error {

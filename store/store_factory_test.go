@@ -9,11 +9,11 @@ import (
 	"testing"
 )
 
-// populatedBufferedStore facilitates construction of an store
-// by accepting the number of items to be present and the max
-// items that will accept.
-func populatedBufferedStore(t *testing.T, items, maxitems int) *store.BufferedStore {
-	s := store.NewBufferedStore(maxitems)
+// populated BufferedStore facilitates construction of an store
+// by accepting the number of items to be present, and
+// store.BufferedStore needed constructor args.
+func populatedBufferedStore(t *testing.T, items, maxitems, subscriberBuffSize int) *store.BufferedStore {
+	s := store.NewBufferedStore(maxitems, subscriberBuffSize)
 	for i := 0; i <= items; i++ {
 		data := "d" + strconv.Itoa(i)
 		item := bytes.NewReader([]byte(data))

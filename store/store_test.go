@@ -15,7 +15,8 @@ import (
 func TestBufferedStore_Subscribe(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	ch, uuid := s.Subscribe()
 	assert.NotEmpty(t, uuid, "want a uuid not an empty string")
 	assert.NotNil(t, ch, "want a channel")
@@ -26,7 +27,8 @@ func TestBufferedStore_Subscribe(t *testing.T) {
 func TestBufferedStore_Unsubscribe(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	// Adds one extra subscriber for test hardening.
 	_, _ = s.Subscribe()
 	ch, uuid := s.Subscribe()
@@ -49,7 +51,8 @@ func TestBufferedStore_Unsubscribe(t *testing.T) {
 func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	_, uuid := s.Subscribe()
 	if err := s.Unsubscribe(uuid); err != nil {
 		t.Error(err)
@@ -66,7 +69,8 @@ func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
 func TestBufferedStore_Reset(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	s.Reset()
 	listenCh, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("dd"))); err != nil {
@@ -92,7 +96,8 @@ func TestBufferedStore_Reset(t *testing.T) {
 func TestBufferedStore(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	listenCh, _ := s.Subscribe()
 
 	s.Reset()
@@ -120,7 +125,8 @@ func TestBufferedStore(t *testing.T) {
 func TestNewBufferedStore_OldItemsClear(t *testing.T) {
 	items := 3
 	maxItems := 3
-	s := populatedBufferedStore(t, items, maxItems)
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	subs, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
 		t.Fatal(err)
