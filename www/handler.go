@@ -2,10 +2,11 @@ package www
 
 import (
 	"fmt"
-	"github.com/eloylp/meerkat/data"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/eloylp/meerkat/data"
 
 	"github.com/eloylp/meerkat/writer"
 )

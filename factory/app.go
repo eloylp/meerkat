@@ -1,9 +1,10 @@
 package factory
 
 import (
+	"net/http"
+
 	"github.com/eloylp/meerkat/config"
 	"github.com/eloylp/meerkat/www"
-	"net/http"
 )
 
 func NewHTTPServedApp(cfg config.Config) (*HTTPServedApp, error) {

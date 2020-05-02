@@ -1,10 +1,12 @@
 package factory
 
 import (
-	"github.com/eloylp/go-serve/www"
-	"github.com/eloylp/meerkat/data"
 	"net/http"
 	"time"
+
+	"github.com/eloylp/go-serve/www"
+
+	"github.com/eloylp/meerkat/data"
 )
 
 type HTTPServedApp struct {

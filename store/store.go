@@ -2,12 +2,13 @@ package store
 
 import (
 	"bytes"
-	"github.com/google/uuid"
 	"io"
 	"io/ioutil"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type subscriber struct {

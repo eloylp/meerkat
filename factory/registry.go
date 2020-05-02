@@ -1,8 +1,9 @@
 package factory
 
 import (
-	"github.com/google/uuid"
 	"net/http"
+
+	"github.com/google/uuid"
 
 	"github.com/eloylp/meerkat/config"
 	"github.com/eloylp/meerkat/data"

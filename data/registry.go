@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+
 	"github.com/eloylp/meerkat/elements"
 )
 
