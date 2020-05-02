@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
+	guuid "github.com/google/uuid"
 )
 
 type subscriber struct {
@@ -89,14 +89,14 @@ func (t *TimeLineStore) Subscribe() (chan io.Reader, string) {
 	t.L.Lock()
 	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscriberBuffSize)
-	suuid := uuid.New().String()
-	t.subscribers = append(t.subscribers, subscriber{ch, suuid})
+	uuid := guuid.New().String()
+	t.subscribers = append(t.subscribers, subscriber{ch, uuid})
 	for _, frame := range t.items {
 		if frame != nil {
 			ch <- bytes.NewReader(frame.data)
 		}
 	}
-	return ch, suuid
+	return ch, uuid
 }
 
 func (t *TimeLineStore) Unsubscribe(uuid string) error {
