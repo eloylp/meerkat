@@ -2,13 +2,12 @@ package store
 
 import (
 	"bytes"
+	"github.com/google/uuid"
 	"io"
 	"io/ioutil"
 	"log"
 	"sync"
 	"time"
-
-	"github.com/eloylp/meerkat/unique"
 )
 
 type subscriber struct {
@@ -89,14 +88,14 @@ func (t *TimeLineStore) Subscribe() (chan io.Reader, string) {
 	t.L.Lock()
 	defer t.L.Unlock()
 	ch := make(chan io.Reader, t.subscriberBuffSize)
-	uuid := unique.UUID4()
-	t.subscribers = append(t.subscribers, subscriber{ch, uuid})
+	suuid := uuid.New().String()
+	t.subscribers = append(t.subscribers, subscriber{ch, suuid})
 	for _, frame := range t.items {
 		if frame != nil {
 			ch <- bytes.NewReader(frame.data)
 		}
 	}
-	return ch, uuid
+	return ch, suuid
 }
 
 func (t *TimeLineStore) Unsubscribe(uuid string) error {
