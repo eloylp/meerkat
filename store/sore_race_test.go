@@ -9,7 +9,7 @@ import (
 )
 
 func TestStore_AddItem_supportsrace(t *testing.T) {
-	s := populatedTimeLineStore(t)
+	s := populatedBufferedStore(t)
 	subs, _ := s.Subscribe()
 
 	go func() {

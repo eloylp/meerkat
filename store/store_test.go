@@ -11,16 +11,16 @@ import (
 	"testing"
 )
 
-func TestTimeLineStore_Subscribe(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestBufferedStore_Subscribe(t *testing.T) {
+	s := populatedBufferedStore(t)
 	_, uuid := s.Subscribe()
 	if uuid == "" {
 		t.Errorf("Ticket number must be above 0, got %v", uuid)
 	}
 }
 
-func TestTimeLineStore_Unsubscribe(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestBufferedStore_Unsubscribe(t *testing.T) {
+	s := populatedBufferedStore(t)
 	_, _ = s.Subscribe()
 	ch2, uuid2 := s.Subscribe()
 	if err := s.Unsubscribe(uuid2); err != nil {
@@ -41,8 +41,8 @@ func TestTimeLineStore_Unsubscribe(t *testing.T) {
 	}
 }
 
-func TestTimeLineStore_Unsubscribe_NotFound(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
+	s := populatedBufferedStore(t)
 	_, uuid := s.Subscribe()
 	if err := s.Unsubscribe(uuid); err != nil {
 		t.Error(err)
@@ -56,8 +56,8 @@ func TestTimeLineStore_Unsubscribe_NotFound(t *testing.T) {
 	}
 }
 
-func TestTimeLineStore_Reset(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestBufferedStore_Reset(t *testing.T) {
+	s := populatedBufferedStore(t)
 	s.Reset()
 	listenCh, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("dd"))); err != nil {
@@ -80,8 +80,8 @@ func TestTimeLineStore_Reset(t *testing.T) {
 		t.Fatal("Only one element was expected in channel")
 	}
 }
-func TestTimeLineStore(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestBufferedStore(t *testing.T) {
+	s := populatedBufferedStore(t)
 	listenCh, _ := s.Subscribe()
 
 	s.Reset()
@@ -106,8 +106,8 @@ func TestTimeLineStore(t *testing.T) {
 	}
 }
 
-func TestNewTimeLineStore_OldItemsClear(t *testing.T) {
-	s := populatedTimeLineStore(t)
+func TestNewBufferedStore_OldItemsClear(t *testing.T) {
+	s := populatedBufferedStore(t)
 	subs, _ := s.Subscribe()
 	if err := s.AddItem(bytes.NewReader([]byte("d4"))); err != nil {
 		t.Fatal(err)
