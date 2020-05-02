@@ -101,7 +101,7 @@ func (t *BufferedStore) Subscribe() (<-chan io.Reader, string) {
 
 func (t *BufferedStore) Unsubscribe(uuid string) error {
 	if !t.exists(uuid) {
-		return newNotFoundError(uuid)
+		return ErrSubscriberNotFound
 	}
 	t.L.Lock()
 	defer t.L.Unlock()

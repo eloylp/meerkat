@@ -48,22 +48,13 @@ func TestBufferedStore_Unsubscribe(t *testing.T) {
 	assert.False(t, ok, "want channel closed after unsubscribe and consumed")
 }
 
-func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
+func TestBufferedStore_Unsubscribe_notfound(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
 	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
-	_, uuid := s.Subscribe()
-	if err := s.Unsubscribe(uuid); err != nil {
-		t.Error(err)
-	}
-	err := s.Unsubscribe(uuid)
-	switch err.(type) {
-	case *store.NotFoundError:
-		break
-	default:
-		t.Errorf("Expected not found error but got %v", err)
-	}
+	err := s.Unsubscribe("A1234")
+	assert.IsType(t, store.ErrSubscriberNotFound, err, "wanted store.ErrSubscriberNotFound got %T", err)
 }
 
 func TestBufferedStore_Reset(t *testing.T) {
