@@ -1,9 +1,9 @@
-PROJECTNAME := $(shell basename "$(PWD)")
+PROJECT_NAME := $(shell basename "$(PWD)")
 BINARY_NAME := meerkat
 VERSION := $(shell git describe --tags)
 GO_VERSION := 1.14.2
-GOLINT_CI_VERSION := v1.26.0
-GOLINT_CI_PATH := $(shell go env GOPATH)/bin
+GO_LINT_CI_VERSION := v1.26.0
+GO_LINT_CI_PATH := $(shell go env GOPATH)/bin
 TIME := $(shell date +%Y-%m-%dT%T%z)
 BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
@@ -17,7 +17,7 @@ lint:
 lint-fix:
 	golangci-lint run -v --fix
 linter-install:
-	wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOLINT_CI_PATH) $(GOLINT_CI_VERSION)
+	wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_LINT_CI_PATH) $(GO_LINT_CI_VERSION)
 all: lint test build
 
 test: test-unit test-integration test-race
