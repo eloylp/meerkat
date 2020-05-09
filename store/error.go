@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	ErrSubscriberNotFound = errors.New("subscriber not found")
+	ErrSubscriberNotFound = errors.New("store: subscriber not found")
 )
