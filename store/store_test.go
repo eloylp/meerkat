@@ -5,11 +5,13 @@ package store_test
 import (
 	"bytes"
 	"fmt"
-	"github.com/eloylp/meerkat/store"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"testing"
+
+	"github.com/eloylp/meerkat/store"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBufferedStore_Subscribe_ElementsAreSentToSubscribers(t *testing.T) {
@@ -28,7 +30,7 @@ func TestBufferedStore_Subscribe_ElementsAreSentToSubscribers(t *testing.T) {
 		assert.NoError(t, err)
 		want := "d" + fmt.Sprint(i)
 		got := string(item)
-		// We check that all datas are present, even removed by excess
+		// We check that all data is present, even removed by excess
 		assert.Equal(t, want, got, "error listening subscribed frames,wanted frame was %q but got %q", want, got)
 	}
 	assert.True(t, chOk, "channel remains open for future consumes")
