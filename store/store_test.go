@@ -109,3 +109,13 @@ func TestNewBufferedStore_AddItem_OldItemsClear(t *testing.T) {
 	got := s.Length()
 	assert.Equal(t, want, got, "want %v resultant items got %v", want, got)
 }
+
+func TestBufferedStore_NoActiveSubscriberDoesntBlock(t *testing.T) {
+
+}
+
+func TestBufferedStore_NoActiveSubscriberIsRemovedAfterTries(t *testing.T) {
+
+}
+
+// TODO . do benchmarks in separate files ???
