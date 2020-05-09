@@ -60,7 +60,7 @@ func TestBufferedStore_Unsubscribe(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, s.Subscribers())
 
-	// exaust channel
+	// exhaust channel
 	var count int
 	for range ch {
 		if count == 2 {
@@ -92,7 +92,7 @@ func TestBufferedStore_Reset(t *testing.T) {
 	s.Reset()
 	assert.Equal(t, 0, s.Subscribers(), "no subscribers expected after reset")
 	assert.Equal(t, 0, s.Length(), "no items expected after reset")
-	// Check channel is closed afer concumption
+	// Check channel is closed after consumption
 	<-ch
 	_, ok := <-ch
 	assert.False(t, ok)
