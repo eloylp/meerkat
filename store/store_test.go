@@ -26,8 +26,8 @@ func TestBufferedStore_Subscribe_ElementsAreSentToSubscribers(t *testing.T) {
 	var itemR io.Reader
 	for i := 0; i < items+1; i++ {
 		itemR, chOk = <-ch
-		item, err := ioutil.ReadAll(itemR)
-		assert.NoError(t, err)
+		item, rErr := ioutil.ReadAll(itemR)
+		assert.NoError(t, rErr)
 		want := "d" + fmt.Sprint(i)
 		got := string(item)
 		// We check that all data is present, even removed by excess
