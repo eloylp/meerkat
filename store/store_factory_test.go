@@ -4,16 +4,17 @@ package store_test
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/store"
 	"strconv"
 	"testing"
+
+	"github.com/eloylp/meerkat/store"
 )
 
 // populated BufferedStore facilitates construction of an store
 // by accepting the number of items to be present, and
 // store.BufferedStore needed constructor args.
-func populatedBufferedStore(t *testing.T, items, maxitems, subscriberBuffSize int) *store.BufferedStore {
-	s := store.NewBufferedStore(maxitems, subscriberBuffSize)
+func populatedBufferedStore(t *testing.T, items, maxItems, subscriberBuffSize int) *store.BufferedStore {
+	s := store.NewBufferedStore(maxItems, subscriberBuffSize)
 	for i := 0; i < items; i++ {
 		data := "d" + strconv.Itoa(i)
 		item := bytes.NewReader([]byte(data))
