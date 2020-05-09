@@ -12,11 +12,11 @@ import (
 )
 
 func TestHTTPFetcher_Fetch(t *testing.T) {
-	resUrl := "http://iesource.com/camera.jpg"
+	resURL := "http://iesource.com/camera.jpg"
 	body := "OK"
 	client := NewTestClient(func(req *http.Request) *http.Response {
-		requestedUrl := req.URL.String()
-		assert.Equal(t, resUrl, requestedUrl, "Expected camera url is %s but client used %s", resUrl, requestedUrl)
+		requestedURL := req.URL.String()
+		assert.Equal(t, resURL, requestedURL, "Expected camera url is %s but client used %s", resURL, requestedURL)
 		return &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(body)),
@@ -24,7 +24,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 		}
 	})
 	fetcher := data.NewHTTPFetcher(client)
-	reader, err := fetcher.Fetch(resUrl)
+	reader, err := fetcher.Fetch(resURL)
 	assert.NoError(t, err)
 	d, err := ioutil.ReadAll(reader)
 	assert.NoError(t, err)
