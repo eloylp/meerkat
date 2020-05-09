@@ -4,11 +4,13 @@ package data_test
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/data"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/eloylp/meerkat/data"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHTTPFetcher_Fetch(t *testing.T) {
