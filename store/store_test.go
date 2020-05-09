@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/eloylp/meerkat/store"
 
@@ -110,12 +112,37 @@ func TestNewBufferedStore_AddItem_OldItemsClear(t *testing.T) {
 	assert.Equal(t, want, got, "want %v resultant items got %v", want, got)
 }
 
-func TestBufferedStore_NoActiveSubscriberDoesntBlock(t *testing.T) {
+func TestBufferedStore_AddItem_NoActiveSubscriberDoesntBlock(t *testing.T) {
+	items := 3 // "d + index" items (continue reading comments ...)
+	maxItems := 3
+	maxSubsBuffSize := 10
+	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	ch, _ := s.Subscribe()      // this subscriber will try to block the entire system
+	limitValueForBlocking := 11 // So we will exceed by one (limit value of maxSubsBuffSize)
 
+	testEnd := make(chan struct{}, 1)
+	go func() {
+		for i := 0; i < limitValueForBlocking; i++ {
+			// "dn + index" will mark new data segments that may override old ones in factory "d + index".
+			err := s.AddItem(bytes.NewReader([]byte("dn" + strconv.Itoa(i))))
+			assert.NoError(t, err)
+		}
+		testEnd <- struct{}{}
+	}()
+	select {
+	case <-time.NewTimer(2 * time.Second).C: // Will break test if its blocking.
+		t.Error("exceeded wait time. May subscribers are blocking the buffer")
+	case <-testEnd:
+		t.Log("successfully inserted items without active subscribers")
+	}
+	s.Reset() // this will close the subscriber channel, allowing us to follow with the next check.
+
+	// Now check that all discarded elements in subscriber buffer are old, from the factory.
+	// This will be done by checking all data in subscriber channels contains "dn + index".
+	for e := range ch {
+		content, err := ioutil.ReadAll(e)
+		assert.NoError(t, err)
+		assert.Contains(t, string(content), "dn",
+			"The are data in subs channel that needs to be discarded")
+	}
 }
-
-func TestBufferedStore_NoActiveSubscriberIsRemovedAfterTries(t *testing.T) {
-
-}
-
-// TODO . do benchmarks in separate files ???

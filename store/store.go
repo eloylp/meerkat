@@ -79,8 +79,13 @@ func (t *BufferedStore) gcItems() {
 	}
 }
 
+// Subscribers that doesnt consume data will begin to
+// loose old messages.
 func (t *BufferedStore) publish(df *dataFrame) {
 	for _, s := range t.subscribers {
+		if len(s.ch) == t.subscriberBuffSize {
+			<-s.ch // remove last element of subscriber channel
+		}
 		s.ch <- bytes.NewReader(df.data)
 	}
 }
