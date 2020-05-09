@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestStore_AddItem_supportsrace(t *testing.T) {
+func TestStore_AddItem_SupportsRace(t *testing.T) {
 	s := populatedBufferedStore(t)
 	subs, _ := s.Subscribe()
 
