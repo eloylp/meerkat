@@ -10,7 +10,7 @@ import (
 )
 
 func TestStore_AddItem_SupportsRace(t *testing.T) {
-	s := storetest.PopulatedBufferedStore(t)
+	s := storetest.PopulatedBufferedStore(t, 3, 3, 5)
 	subs, _ := s.Subscribe()
 
 	go func() {
