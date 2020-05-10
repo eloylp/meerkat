@@ -4,12 +4,13 @@ package store_test
 
 import (
 	"bytes"
+	"github.com/eloylp/meerkat/store/storetest"
 	"testing"
 	"time"
 )
 
 func TestStore_AddItem_SupportsRace(t *testing.T) {
-	s := populatedBufferedStore(t)
+	s := storetest.PopulatedBufferedStore(t)
 	subs, _ := s.Subscribe()
 
 	go func() {

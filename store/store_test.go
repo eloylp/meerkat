@@ -5,6 +5,7 @@ package store_test
 import (
 	"bytes"
 	"fmt"
+	"github.com/eloylp/meerkat/store/storetest"
 	"io"
 	"io/ioutil"
 	"strconv"
@@ -20,7 +21,7 @@ func TestBufferedStore_Subscribe_ElementsAreSentToSubscribers(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	ch, _ := s.Subscribe()
 	err := s.AddItem(bytes.NewReader([]byte("d3"))) // Extra (4th) data that is removed by excess
 	assert.NoError(t, err)
@@ -42,7 +43,7 @@ func TestBufferedStore_Subscribe_ReturnValues(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	ch, uuid := s.Subscribe()
 	assert.NotEmpty(t, uuid, "want a uuid not an empty string")
 	assert.NotNil(t, ch, "want a channel")
@@ -54,7 +55,7 @@ func TestBufferedStore_Unsubscribe(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	// Adds one extra subscriber for test hardening.
 	_, _ = s.Subscribe()
 	ch, uuid := s.Subscribe()
@@ -78,7 +79,7 @@ func TestBufferedStore_Unsubscribe_NotFound(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	err := s.Unsubscribe("A1234")
 	assert.IsType(t, store.ErrSubscriberNotFound, err, "wanted store.ErrSubscriberNotFound got %T", err)
 }
@@ -87,7 +88,7 @@ func TestBufferedStore_Reset(t *testing.T) {
 	items := 0
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	ch, _ := s.Subscribe()
 	err := s.AddItem(bytes.NewReader([]byte("dd")))
 	assert.NoError(t, err)
@@ -104,7 +105,7 @@ func TestNewBufferedStore_AddItem_OldItemsClear(t *testing.T) {
 	items := 3
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	err := s.AddItem(bytes.NewReader([]byte("d4")))
 	assert.NoError(t, err)
 	want := 3
@@ -116,7 +117,7 @@ func TestBufferedStore_AddItem_NoActiveSubscriberDoesntBlock(t *testing.T) {
 	items := 3 // "d + index" items (continue reading comments ...)
 	maxItems := 3
 	maxSubsBuffSize := 10
-	s := populatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
+	s := storetest.PopulatedBufferedStore(t, items, maxItems, maxSubsBuffSize)
 	ch, _ := s.Subscribe()      // this subscriber will try to block the entire system
 	limitValueForBlocking := 11 // So we will exceed by one (limit value of maxSubsBuffSize)
 

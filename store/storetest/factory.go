@@ -1,6 +1,4 @@
-// +build unit integration race
-
-package store_test
+package storetest
 
 import (
 	"bytes"
@@ -10,10 +8,10 @@ import (
 	"github.com/eloylp/meerkat/store"
 )
 
-// populated BufferedStore facilitates construction of an store
+// PopulatedBufferedStore facilitates construction of an store
 // by accepting the number of items to be present, and
 // store.BufferedStore needed constructor args.
-func populatedBufferedStore(t *testing.T, items, maxItems, subscriberBuffSize int) *store.BufferedStore {
+func PopulatedBufferedStore(t testing.TB, items, maxItems, subscriberBuffSize int) *store.BufferedStore {
 	s := store.NewBufferedStore(maxItems, subscriberBuffSize)
 	for i := 0; i < items; i++ {
 		data := "d" + strconv.Itoa(i)
