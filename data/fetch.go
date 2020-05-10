@@ -24,7 +24,7 @@ func (f *Fetcher) Fetch(res string) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = r.Body.Close(); err != nil {
+	if err := r.Body.Close(); err != nil {
 		return nil, err
 	}
 	reader := bytes.NewReader(data)

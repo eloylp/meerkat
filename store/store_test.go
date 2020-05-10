@@ -5,16 +5,16 @@ package store_test
 import (
 	"bytes"
 	"fmt"
-	"github.com/eloylp/meerkat/store/storetest"
 	"io"
 	"io/ioutil"
 	"strconv"
 	"testing"
 	"time"
 
-	"github.com/eloylp/meerkat/store"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/meerkat/store"
+	"github.com/eloylp/meerkat/store/storetest"
 )
 
 func TestBufferedStore_Subscribe_ElementsAreSentToSubscribers(t *testing.T) {

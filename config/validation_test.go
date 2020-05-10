@@ -3,9 +3,11 @@
 package config_test
 
 import (
-	"github.com/eloylp/meerkat/config"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/meerkat/config"
 )
 
 func TestValidate(t *testing.T) {
@@ -57,8 +59,8 @@ func TestValidate(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.description, func(t *testing.T) {
-			err := config.Validate(c.config)
-			if c.mustPass {
+			err := config.Validate(c.config) //nolint:scopelint
+			if c.mustPass {                  //nolint:scopelint
 				assert.NoError(t, err)
 			} else {
 				assert.Error(t, err)

@@ -3,11 +3,13 @@
 package data_test
 
 import (
-	"github.com/eloylp/meerkat/data"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"io"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
+	"github.com/eloylp/meerkat/data"
 )
 
 type storeMock struct {

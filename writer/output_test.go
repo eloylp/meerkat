@@ -4,9 +4,10 @@ package writer_test
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/writer"
 	"regexp"
 	"testing"
+
+	"github.com/eloylp/meerkat/writer"
 )
 
 func TestMJPEGDumper_Boundary(t *testing.T) {
