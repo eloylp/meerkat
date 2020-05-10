@@ -19,11 +19,14 @@ type Store interface {
 	// AddItem will add to the store a chunk of data
 	AddItem(r io.Reader) error
 	// Subscribe will return an output channel that will be notified
-	// when more data arrives to store it will also return the associated UUID
+	// when more data arrives to store. It will also return the associated UUID
 	// for later Unsubscribe operation.
 	//
 	// Depending on the implementation it will dump to the returned channel
 	// the entire available data layer until the last frame is reached.
+	// If you are not actively consuming this channel, but data continues
+	// arriving from the store, the oldest element will be replaced by the
+	// new one in the channel an so on.
 	Subscribe() (<-chan io.Reader, string)
 	// Subscribers will return the current number of active subscribers
 	Subscribers() int
