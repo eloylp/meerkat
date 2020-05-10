@@ -16,7 +16,7 @@ func TestMJPEGDumper_Boundary(t *testing.T) {
 	d := writer.NewMJPEGWriter(w)
 	bLength := len(d.Boundary())
 	if bLength != expectedBoundaryLength {
-		t.Errorf("Expected boundary is %v and was %v", expectedBoundaryLength, bLength)
+		t.Errorf("expected boundary is %v and was %v", expectedBoundaryLength, bLength)
 	}
 }
 
@@ -34,6 +34,6 @@ func TestNewMJPEGDumper(t *testing.T) {
 	re := regexp.MustCompile(`\r?\n`)
 	writePartSanitized := re.ReplaceAllString(writePartString, " ")
 	if writePartSanitized != expectedPart {
-		t.Errorf("Expected string part is \n %s \ngot\n %s", expectedPart, writePartSanitized)
+		t.Errorf("expected string part is \n %s \ngot\n %s", expectedPart, writePartSanitized)
 	}
 }
