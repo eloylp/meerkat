@@ -2,6 +2,7 @@ package data
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -30,8 +31,10 @@ func (dp *Pump) Start() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err := dp.store.AddItem(reader); err != nil {
+		data, err := ioutil.ReadAll(reader)
+		if err != nil {
 			log.Fatal(err)
 		}
+		dp.store.Add(data)
 	}
 }

@@ -2,22 +2,23 @@ package factory
 
 import (
 	"net/http"
+	"time"
+
+	"github.com/eloylp/kit/flow/fanout"
 
 	"github.com/google/uuid"
 
 	"github.com/eloylp/meerkat/config"
 	"github.com/eloylp/meerkat/data"
-	"github.com/eloylp/meerkat/store"
 )
 
 func NewDataFlowRegistry(cfg config.Config) (*data.FlowRegistry, error) {
 	dfr := &data.FlowRegistry{}
 	for _, r := range cfg.Resources {
-		maxItems := 10
-		dataStore := store.NewBufferedStore(maxItems, 10) // todo get from config ?
+		fo := fanout.NewBufferedFanOut(10, time.Now) // todo get from config ?
 		fetcher := data.NewHTTPFetcher(&http.Client{})
-		dataPump := data.NewDataPump(cfg.PollInterval, r, fetcher, dataStore)
-		dfr.Add(data.NewDataFlow(uuid.New().String(), r, dataStore, dataPump))
+		dataPump := data.NewDataPump(cfg.PollInterval, r, fetcher, fo)
+		dfr.Add(data.NewDataFlow(uuid.New().String(), r, fo, dataPump))
 	}
 	return dfr, nil
 }

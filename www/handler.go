@@ -1,6 +1,7 @@
 package www
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
@@ -35,12 +36,11 @@ func HandleMJPEG(dfr *data.FlowRegistry) http.HandlerFunc {
 		if err != nil {
 			log.Fatal(err)
 		}
-		readers, uuid := store.Subscribe()
+		elems, _, cancel := store.Subscribe()
 		notify := r.Context().Done()
-
 		go func() {
 			<-notify
-			if err := store.Unsubscribe(uuid); err != nil {
+			if err := cancel(); err != nil {
 				log.Fatal(err)
 			}
 			log.Printf("Client with socket %s left connection", r.RemoteAddr)
@@ -48,8 +48,12 @@ func HandleMJPEG(dfr *data.FlowRegistry) http.HandlerFunc {
 
 		log.Printf("Started data streaming to client with socket %s", r.RemoteAddr)
 
-		for reader := range readers {
-			if err := mJPEGWriter.WritePart(reader); err != nil {
+		for elem := range elems {
+			frame, ok := elem.Elem.([]byte)
+			if !ok {
+				panic(fmt.Errorf("programmming error: unexpected tyoe in handler from store"))
+			}
+			if err := mJPEGWriter.WritePart(bytes.NewReader(frame)); err != nil {
 				_, _ = w.Write([]byte("Frame cannot be processed"))
 			}
 		}

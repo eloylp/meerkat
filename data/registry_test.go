@@ -3,7 +3,7 @@
 package data_test
 
 import (
-	"io"
+	"github.com/eloylp/kit/flow/fanout"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,17 +16,16 @@ type storeMock struct {
 	mock.Mock
 }
 
-func (s *storeMock) AddItem(r io.Reader) error {
-	args := s.Called(r)
-	return args.Error(0)
+func (s *storeMock) Add(elem interface{}) {
+	s.Called(elem)
 }
 
-func (s *storeMock) Subscribe() (<-chan io.Reader, string) { //nolint:gocritic
+func (s *storeMock) Subscribe() (<-chan *fanout.Slot, string, fanout.CancelFunc) { //nolint:gocritic
 	args := s.Called()
-	return args.Get(0).(chan io.Reader), args.String(1)
+	return args.Get(0).(chan *fanout.Slot), args.String(1), args.Get(2).(fanout.CancelFunc)
 }
 
-func (s *storeMock) Subscribers() int {
+func (s *storeMock) SubscribersLen() int {
 	args := s.Called()
 	return args.Int(0)
 }
@@ -34,11 +33,6 @@ func (s *storeMock) Subscribers() int {
 func (s *storeMock) Unsubscribe(ticket string) error {
 	args := s.Called(ticket)
 	return args.Error(0)
-}
-
-func (s *storeMock) Length() int {
-	args := s.Called()
-	return args.Int(0)
 }
 
 func (s *storeMock) Reset() {
