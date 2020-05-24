@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Test_parseResources(t *testing.T) {
+func Test_ParseResources(t *testing.T) {
 	s := []struct {
 		Input       string
 		Expected    []string
@@ -29,10 +29,9 @@ func Test_parseResources(t *testing.T) {
 			Description: "Must accept multiple URL resource",
 		},
 	}
-
 	for _, c := range s {
 		t.Run(c.Description, func(t *testing.T) {
-			result := parseResources(c.Input)
+			result := ParseResources(c.Input)
 			assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v",
 				c.Description, c.Expected, result)
 		})

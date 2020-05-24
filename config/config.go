@@ -1,8 +1,6 @@
 package config
 
 import (
-	"flag"
-	"os"
 	"strings"
 )
 
@@ -12,22 +10,7 @@ type Config struct {
 	HTTPListenAddress string
 }
 
-func FromArguments() Config {
-	cfg := Config{}
-	var resources string
-	flag.StringVar(&resources, "u", "", "The comma separated URLS to recover frames from")
-	flag.IntVar(&cfg.PollInterval, "i", 1, "The interval to fill the frame buffer")
-	flag.StringVar(&cfg.HTTPListenAddress, "l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
-	flag.Parse()
-	cfg.Resources = parseResources(resources)
-	if err := Validate(cfg); err != nil {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-	return cfg
-}
-
-func parseResources(p string) []string {
+func ParseResources(p string) []string {
 	p = strings.Replace(p, " ", "", -1)
 	return strings.Split(p, ",")
 }
