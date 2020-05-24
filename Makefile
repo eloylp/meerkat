@@ -8,7 +8,12 @@ TIME := $(shell date +%Y-%m-%dT%T%z)
 BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
-LDFLAGS=-ldflags "-s -w -X=main.Name=$(PROJECTNAME) -X=main.Version=$(VERSION) -X=main.Build=$(BUILD) -X=main.BuildTime=$(TIME)"
+LDFLAGS=-ldflags "-s -w \
+		-X=main.Name=$(PROJECTNAME) \
+		-X=main.Version=$(VERSION) \
+		-X=main.Build=$(BUILD) \
+		-X=main.BuildTime=$(TIME)"
+FLAGS=-trimpath
 
 .DEFAULT_GOAL := build
 
@@ -32,7 +37,7 @@ test-bench:
 	go test -v -bench=. ./...
 build:
 	mkdir -p $(DIST_FOLDER)
-	CGO_ENABLED=0 go build $(LDFLAGS) -o $(BINARY_OUTPUT)
+	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) -o $(BINARY_OUTPUT)
 	@echo "Binary output at $(BINARY_OUTPUT)"
 build-docker:
 	docker run -e "CGO_ENABLED=0" --rm -v ${CURDIR}:/usr/src/code -w /usr/src/code golang:$(GO_VERSION) make build
