@@ -1,4 +1,4 @@
-PROJECT_NAME := $(shell basename "$(PWD)")
+PROJECT_NAME := meerkat
 BINARY_NAME := meerkat
 VERSION := $(shell git describe --tags)
 GO_VERSION := 1.14.2
@@ -9,7 +9,7 @@ BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
 LDFLAGS=-ldflags "-s -w \
-		-X=main.Name=$(PROJECTNAME) \
+		-X=main.Name=$(PROJECT_NAME) \
 		-X=main.Version=$(VERSION) \
 		-X=main.Build=$(BUILD) \
 		-X=main.BuildTime=$(TIME)"
