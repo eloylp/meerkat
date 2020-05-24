@@ -12,12 +12,9 @@ func NewHTTPServedApp(cfg config.Config) (*HTTPServedApp, error) {
 	if err != nil {
 		return nil, err
 	}
-	h := http.NewServeMux()
-	h.HandleFunc(www.DashboardPath, www.HandleHTMLClient(dfr))
-	h.HandleFunc(www.DataStreamPath, www.HandleMJPEG(dfr))
 	s := &http.Server{
 		Addr:    cfg.HTTPListenAddress,
-		Handler: h,
+		Handler: www.Router(dfr),
 	}
 	return &HTTPServedApp{
 		httpServer:       s,
