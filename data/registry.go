@@ -18,7 +18,7 @@ func (dfr *FlowRegistry) Flows() []elements.Flow {
 	return dfr.flows
 }
 
-func (dfr *FlowRegistry) Add(df *Flow) {
+func (dfr *FlowRegistry) Add(df elements.Flow) {
 	dfr.flows = append(dfr.flows, df)
 }
 
