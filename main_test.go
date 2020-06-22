@@ -12,9 +12,9 @@ import (
 func TestBadArgument_URL_ShowsHelp(t *testing.T) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
-	args := []string{Name, "-u", "badAddress"}
+	args := []string{Name}
 	err := run(args, &stdout, &stderr)
+	gotStderr := stderr.String()
 	assert.Error(t, err)
-	assert.Contains(t, stderr, "meerkat")   // contains program name
-	assert.Contains(t, stderr, "-u string") // contains arg help
+	assert.Contains(t, gotStderr, "-u string") // contains arg help
 }

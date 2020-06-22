@@ -7,14 +7,14 @@ import (
 )
 
 type FlowRegistry struct {
-	flows []*Flow
+	flows []elements.Flow
 }
 
-func NewFlowRegistry(flows []*Flow) *FlowRegistry {
+func NewFlowRegistry(flows []elements.Flow) *FlowRegistry {
 	return &FlowRegistry{flows: flows}
 }
 
-func (dfr *FlowRegistry) Flows() []*Flow {
+func (dfr *FlowRegistry) Flows() []elements.Flow {
 	return dfr.flows
 }
 
@@ -25,7 +25,7 @@ func (dfr *FlowRegistry) Add(df *Flow) {
 func (dfr *FlowRegistry) FindStore(wfUID string) (elements.Store, error) {
 	for _, wf := range dfr.Flows() {
 		if wf.UUID() == wfUID {
-			return wf.dataStore, nil
+			return wf.Store(), nil
 		}
 	}
 	return nil, fmt.Errorf("cannot find worklow %v", wfUID)

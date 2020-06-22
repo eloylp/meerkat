@@ -41,3 +41,9 @@ type Store interface {
 type Dumper interface {
 	WritePart(data io.Reader) error
 }
+
+type Flow interface {
+	UUID() string
+	Store() Store
+	Start()
+}
