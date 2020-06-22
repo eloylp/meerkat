@@ -33,6 +33,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 	assert.Equal(t, body, string(d), "Expected body is %v got %v", body, reader)
 }
 
+//noinspection GoLinterLocal
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
 		Transport: fn,
