@@ -1,10 +1,13 @@
 // +build unit
 
-package config
+package config_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/meerkat/config"
 )
 
 func Test_ParseResources(t *testing.T) {
@@ -31,7 +34,7 @@ func Test_ParseResources(t *testing.T) {
 	}
 	for _, c := range s {
 		t.Run(c.Description, func(t *testing.T) {
-			result := ParseResources(c.Input)
+			result := config.ParseResources(c.Input)
 			assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v",
 				c.Description, c.Expected, result)
 		})
