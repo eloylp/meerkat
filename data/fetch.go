@@ -1,4 +1,4 @@
-package fetch
+package data
 
 import (
 	"bytes"
@@ -7,24 +7,19 @@ import (
 	"net/http"
 )
 
-type fetcher interface {
-	Fetch(res string) (io.Reader, error)
-}
-
-type hTTPFetcher struct {
+type Fetcher struct {
 	client *http.Client
 }
 
-func NewHTTPFetcher(client *http.Client) *hTTPFetcher {
-	return &hTTPFetcher{client: client}
+func NewHTTPFetcher(client *http.Client) *Fetcher {
+	return &Fetcher{client: client}
 }
 
-func (f *hTTPFetcher) Fetch(res string) (io.Reader, error) {
+func (f *Fetcher) Fetch(res string) (io.Reader, error) {
 	r, err := f.client.Get(res)
 	if err != nil {
 		return nil, err
 	}
-	// TODO , investigate if is needed to read the entire body to close it.
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err

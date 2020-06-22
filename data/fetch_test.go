@@ -1,46 +1,41 @@
-package fetch_test
+// +build unit
+
+package data_test
 
 import (
 	"bytes"
-	"github.com/eloylp/meerkat/fetch"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/eloylp/meerkat/data"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHTTPFetcher_Fetch(t *testing.T) {
-
-	resUrl := "http://iesource.com/camera.jpg"
+	resURL := "http://iesource.com/camera.jpg"
 	body := "OK"
 	client := NewTestClient(func(req *http.Request) *http.Response {
-		requestedUrl := req.URL.String()
-		if requestedUrl != resUrl {
-			t.Errorf("Expected camera url is %s but client used %s", resUrl, requestedUrl)
-		}
+		requestedURL := req.URL.String()
+		assert.Equal(t, resURL, requestedURL, "Expected camera url is %s but client used %s", resURL, requestedURL)
 		return &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewBufferString(body)),
 			Header:     make(http.Header),
 		}
 	})
-	fetcher := fetch.NewHTTPFetcher(client)
-	reader, err := fetcher.Fetch(resUrl)
+	fetcher := data.NewHTTPFetcher(client)
+	reader, err := fetcher.Fetch(resURL)
+	assert.NoError(t, err)
 	d, err := ioutil.ReadAll(reader)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if err != nil {
-		t.Error(err)
-	}
-	if string(d) != body {
-		t.Errorf("Expected body is %v got %v", body, reader)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, body, string(d), "Expected body is %v got %v", body, reader)
 }
 
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
-		Transport: RoundTripFunc(fn),
+		Transport: fn,
 	}
 }
 

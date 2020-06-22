@@ -1,7 +1,7 @@
 # Meerkat
 A CLI tool for fetching multiple public cameras composing a general global view.
-Some web cameras only provide an static JPEG file that will refresh periodically.
-This tool helps pulling that JPEG's and composing one MJPEG flow for each camera
+Some web cameras only provide a static JPEG file that will refresh periodically.
+This tool helps to pull that JPEG's and composing one MJPEG flow for each camera
 presenting them on a browser.
 
 ## How to install

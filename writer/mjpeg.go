@@ -6,19 +6,19 @@ import (
 	"net/textproto"
 )
 
-type mJPEGWriter struct {
+type MJPEGWriter struct {
 	mimeWriter *multipart.Writer
 }
 
-func (mw *mJPEGWriter) Boundary() string {
+func (mw *MJPEGWriter) Boundary() string {
 	return mw.mimeWriter.Boundary()
 }
 
-func NewMJPEGWriter(w io.Writer) *mJPEGWriter {
-	return &mJPEGWriter{mimeWriter: multipart.NewWriter(w)}
+func NewMJPEGWriter(w io.Writer) *MJPEGWriter {
+	return &MJPEGWriter{mimeWriter: multipart.NewWriter(w)}
 }
 
-func (mw *mJPEGWriter) WritePart(data io.Reader) error {
+func (mw *MJPEGWriter) WritePart(data io.Reader) error {
 	h := make(textproto.MIMEHeader)
 	h.Add("Content-Type", "image/jpeg")
 	w, err := mw.mimeWriter.CreatePart(h)
