@@ -20,9 +20,9 @@ func TestHandleHTMLClient(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, www.DashboardPath, nil)
 	h := router()
 	h.ServeHTTP(rec, req)
-	gotContentType := rec.Result().Header.Get("Content-Type")
+	gotContentType := rec.Result().Header.Get("Content-Type") //nolint:bodyclose
 	assert.Contains(t, gotContentType, "text/html")
-	body := rec.Result().Body
+	body := rec.Result().Body //nolint:bodyclose
 	bytes, err := ioutil.ReadAll(body)
 	assert.NoError(t, err)
 	want := fmt.Sprintf(`<img src=%s>`, www.DataStreamPath+"/A1234")
