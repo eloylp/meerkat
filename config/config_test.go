@@ -10,7 +10,6 @@ import (
 	"github.com/eloylp/meerkat/config"
 )
 
-//noinspection GoLinterLocal,GoLinterLocal
 func Test_ParseResources(t *testing.T) {
 	s := []struct {
 		Input       string
@@ -36,7 +35,6 @@ func Test_ParseResources(t *testing.T) {
 	for _, c := range s {
 		t.Run(c.Description, func(t *testing.T) {
 			result := config.ParseResources(c.Input)
-			//noinspection GoLinterLocal
 			assert.Equal(t, c.Expected, result, "Cannot ensure case '%s', expected output is %v but got %v", c.Description, c.Expected, result)
 		})
 	}
