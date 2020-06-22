@@ -1,4 +1,4 @@
 package www
 
-const DataStreamPath = "/data/"
+const DataStreamPath = "/data"
 const DashboardPath = "/"

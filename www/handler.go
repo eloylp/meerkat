@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
+
+	"github.com/gorilla/mux"
 
 	"github.com/eloylp/meerkat/data"
 
@@ -14,13 +15,11 @@ import (
 
 func HandleHTMLClient(dfr *data.FlowRegistry) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Add("Content-type", "text/h")
-
+		r.Header.Add("Content-type", "text/html")
 		var img string
 		for _, df := range dfr.Flows() {
-			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+df.UUID())
+			img += fmt.Sprintf(`<img src=%s>`, DataStreamPath+"/"+df.UUID())
 		}
-
 		doc := fmt.Sprintf(`<!DOCTYPE html><html><body>%s</body></html>`, img)
 		_, _ = w.Write([]byte(doc))
 	}
@@ -31,7 +30,7 @@ func HandleMJPEG(dfr *data.FlowRegistry) http.HandlerFunc {
 		mJPEGWriter := writer.NewMJPEGWriter(w)
 		contentType := fmt.Sprintf("multipart/x-mixed-replace;boundary=%s", mJPEGWriter.Boundary())
 		w.Header().Add("Content-Type", contentType)
-		dataFlowUUID := strings.TrimPrefix(r.URL.Path, DataStreamPath)
+		dataFlowUUID := mux.Vars(r)["id"]
 		store, err := dfr.FindStore(dataFlowUUID)
 		if err != nil {
 			log.Fatal(err)
