@@ -15,7 +15,8 @@ import (
 func NewDataFlowRegistry(cfg config.Config) (*data.FlowRegistry, error) {
 	dfr := &data.FlowRegistry{}
 	for _, r := range cfg.Resources {
-		fo := fanout.NewBufferedFanOut(10, time.Now) // todo get from config ?
+		buffLen := 10 // todo get from config ?
+		fo := fanout.NewBufferedFanOut(buffLen, time.Now)
 		fetcher := data.NewHTTPFetcher(&http.Client{})
 		dataPump := data.NewDataPump(cfg.PollInterval, r, fetcher, fo)
 		dfr.Add(data.NewDataFlow(uuid.New().String(), r, fo, dataPump))
