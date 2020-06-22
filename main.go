@@ -36,7 +36,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 	resources := fs.String("u", "", "The comma separated URLS to recover frames from")
 	pollInterval := fs.Int("i", 1, "The interval to fill the frame buffer")
 	listenAddress := fs.String("l", "0.0.0.0:3000", "Pass the http server listen address for serving results")
-	if err := fs.Parse(args[1:]); err != nil {
+	if err := fs.Parse(args[1:]); err != nil { //nolint:govet
 		return err
 	}
 	cfg := config.Config{
@@ -44,7 +44,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 		PollInterval:      *pollInterval,
 		HTTPListenAddress: *listenAddress,
 	}
-	if err := config.Validate(cfg); err != nil {
+	if err = config.Validate(cfg); err != nil {
 		fs.PrintDefaults()
 		return err
 	}
