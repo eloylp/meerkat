@@ -2,9 +2,10 @@ package factory
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
-	"github.com/eloylp/go-serve/www"
+	"github.com/eloylp/kit/shutdown"
 
 	"github.com/eloylp/meerkat/data"
 )
@@ -18,10 +19,13 @@ func (a *HTTPServedApp) Start() error {
 	for _, dataFlow := range a.dataFlowRegistry.Flows() {
 		go dataFlow.Start()
 	}
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	shutDownTimeout := 20 * time.Second
-	www.Shutdown(a.httpServer, shutDownTimeout)
+	shutdown.WithOSSignals(a.httpServer, shutDownTimeout, wg, nil)
 	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
 	}
+	wg.Wait()
 	return nil
 }
