@@ -4,7 +4,7 @@ before:
 builds:
   - binary: meerkat
     ldflags:
-      - -s -w -X main.version={{.Version}}
+      - -s -w -X main.Name=go-serve -X main.Version={{.Version}} -X main.Build={{.ShortCommit}} -X main.BuildTime={{.Date}}
     env:
       - CGO_ENABLED=0
     goos:
